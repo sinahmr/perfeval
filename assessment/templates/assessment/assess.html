@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}ارزیابی کارمند{% endblock %}
+
+{% block content %}
+    <div>
+        <h2>مشخصات کارمند: علی علوی</h2>
+        <table>
+            <tr>
+                <td>نام</td>
+                <td>علی</td>
+            </tr>
+            <tr>
+                <td>نام خانوادگی</td>
+                <td>علوی</td>
+            </tr>
+            <tr>
+                <td>واحد</td>
+                <td>حسابداری</td>
+            </tr>
+            <tr>
+                <td>نوع</td>
+                <td>مدیر واحد</td>
+            </tr>
+        </table>
+    </div>
+    <br/><br/>
+    <div>
+        <div>
+            <table>
+                <tr>
+                    <td>نام معیار</td>
+                    <td>تست</td>
+                </tr>
+                <tr>
+                    <td>توضیحات معیار</td>
+                    <td>تست</td>
+                </tr>
+                <tr>
+                    <td>فرمول کمی</td>
+                    <td>فلان * فلان</td>
+                </tr>
+                <tr>
+                    <td>پاسخ کمی</td>
+                    <td><input type="text"></td>
+                </tr>
+                <tr>
+                    <td>پاسخ کیفی</td>
+                    <td>
+                        <input type="radio" id="qual1" name="qual" value="1">
+                        <label for="qual1">ضعیف</label>
+
+                        <input type="radio" id="qual2" name="qual" value="2">
+                        <label for="qual2">متوسط</label>
+
+                        <input type="radio" id="qual3" name="qual" value="3">
+                        <label for="qual3">خوب</label>
+                    </td>
+                </tr>
+            </table>
+            <hr/>
+            <table>
+                <tr>
+                    <td>نظر کلی</td>
+                    <td><textarea></textarea></td>
+                </tr>
+            </table>
+            <button>ثبت</button>
+        </div>
+    </div>
+{% endblock %}
