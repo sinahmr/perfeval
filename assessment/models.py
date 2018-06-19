@@ -12,7 +12,7 @@ class QualitativeCriterion(models.Model):
     interpretation = models.TextField()
 
 class QuantitativeCriterion(models.Model):
-    formula = models.CharField(verbose_name='انتخاب ها', max_length=20, null=False, blank=False)
+    formula = models.CharField(verbose_name='فرمول', max_length=20, null=False, blank=False)
     interpretation = models.TextField()
 
 class Scale(models.Model):
@@ -30,19 +30,17 @@ class Assessment(models.Model):
 
     unique_together = ("assessor", "assessed", "season")
 
-    def __str__(self):
-        return self.name
 
 class ScaleAnswer(models.Model):
-    assessment = models.ForeignKey(Assessment)
+    assessment = models.ForeignKey(Assessment, related_name="scale_answers", related_query_name="scale_answers")
     scale = models.OneToOneField(Scale, null=False)
-    qualitativeAnswer = models.CharField()
-    quantitativeAnswer = models.CharField()
+    qualitativeAnswer = models.CharField(max_length=100,null=False,blank=False)
+    quantitativeAnswer = models.CharField(max_length=100,null=False,blank=False)
 
 class PunnishmentReward(models.Model):
     method = models.TextField(null=False, blank=False)
     type = models.BooleanField(null=True)
-    season = models.ForeignKey(Season, related_name="assessments", related_query_name="assessments", null=False,
+    season = models.ForeignKey(Season, related_name="punishment_rewards", related_query_name="punishment_rewards", null=False,
                                blank=False)
     employee = models.ForeignKey(Employee)
 
