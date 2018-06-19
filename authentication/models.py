@@ -1,45 +1,27 @@
 from django.db import models
 from django.db import IntegrityError
 from django.contrib.auth.models import AbstractUser
-from django.contrib.auth import authenticate, logout as auth_logout, login as auth_login
-from .exceptions import RepetitiousUsername, FailedLogin
+from .exceptions import RepetitiousUsername
 
 
 class Unit(models.Model):
-    name = models.CharField(verbose_name='نام واحد', max_length=30)
+    name = models.CharField(verbose_name='نام واحد', max_length=30, null=False)
 
     def __str__(self):
         return self.name
 
 
+class UserManager(models.Manager):
+    pass
+
+
 # TODO handle down cast for user
-# TODO every class should have create method
-# TODO apply to class diagram: year_of_birth, personnel_code, first_name, last_name, mobile
 class User(AbstractUser):
-    father_name = models.CharField(verbose_name='نام پدر', max_length=30)
-    personnel_code = models.CharField(verbose_name='شماره پرسنلی', max_length=8)
-    national_code = models.CharField(verbose_name='کد ملی', max_length=10)
-    year_of_birth = models.IntegerField(verbose_name='سال تولد')
-    mobile = models.CharField(verbose_name='موبایل', max_length=15)
-
-    @classmethod
-    def create(cls, **kwargs):
-        user = User(**kwargs)
-        user.set_password(kwargs.get('password'))
-        user.save()
-        return user
-
-    @classmethod
-    def login(cls, request, username, password):
-        user = authenticate(username=username, password=password)
-        if not user:
-            raise FailedLogin
-        auth_login(request, user)
-        return user
-
-    @classmethod
-    def logout(cls, request):
-        auth_logout(request)
+    father_name = models.CharField(verbose_name='نام پدر', max_length=30, null=True)
+    personnel_code = models.CharField(verbose_name='شماره پرسنلی', max_length=8, null=True)
+    national_code = models.CharField(verbose_name='کد ملی', max_length=10, null=True)
+    year_of_birth = models.IntegerField(verbose_name='سال تولد', null=True)
+    mobile = models.CharField(verbose_name='موبایل', max_length=15, null=True)
 
     @classmethod
     def get_user_by_username(cls, username):

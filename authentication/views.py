@@ -1,10 +1,23 @@
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse
 from django.contrib import messages
 from .exceptions import FailedLogin, RepetitiousUsername
 from .models import User
 from . import forms
+from django.contrib.auth import views as auth_views
+
+
+class LoginView(auth_views.LoginView):
+    template_name = 'authentication/login.html'
+    redirect_authenticated_user = True
+
+    def get_success_url(self):
+        return reverse('employee_list')
+
+
+class LogoutView(auth_views.LogoutView):
+    template_name = 'authentication/logout.html'
 
 
 def add_user(request):
