@@ -1,10 +1,10 @@
 from django.urls import path
+
 from . import views
 
 urlpatterns = [
-    path('user/add/', views.add_user, name='add_user'),
-    path('user/change/', views.change_username_or_password, name='change_username_or_password'),
+    path('employee/add/', views.AddEmployeeView.as_view(), name='employee_add'),
+    path('employee/update/', views.UpdateUsernameOrPasswordViewForEmployee.as_view(), name='employee_update'),
     path('login/', views.LoginView.as_view(), name='login'),
     path('logout/', views.LogoutView.as_view(), name='logout'),
-    path('user/delete/<int:user_id>', views.delete_user),  # TODO delete this API
 ]

@@ -1,6 +1,7 @@
-from django.db import models
+from django.contrib.auth.models import AbstractUser, UserManager as DjangoUserManager
 from django.db import IntegrityError
-from django.contrib.auth.models import AbstractUser
+from django.db import models
+
 from .exceptions import RepetitiousUsername
 
 
@@ -11,31 +12,36 @@ class Unit(models.Model):
         return self.name
 
 
-class UserManager(models.Manager):
-    pass
+class UserManager(DjangoUserManager):
+    def create_superuser(self, username, email, password, **extra_fields):
+        user = super(UserManager, self).create_superuser(username, email, password, **extra_fields)
+        Admin.objects.create(user_ptr=user)
+        user.save()
+        return user
+
+    def get_by_username(self, username):  # TODO not used
+        try:
+            return self.get(username=username)
+        except User.DoesNotExist:
+            return None
+
+    def get_by_id(self, user_id):  # TODO not used
+        try:
+            return self.get(pk=user_id)
+        except User.DoesNotExist:
+            return None
 
 
-# TODO handle down cast for user
 class User(AbstractUser):
-    father_name = models.CharField(verbose_name='نام پدر', max_length=30, null=True)
-    personnel_code = models.CharField(verbose_name='شماره پرسنلی', max_length=8, null=True)
-    national_code = models.CharField(verbose_name='کد ملی', max_length=10, null=True)
-    year_of_birth = models.IntegerField(verbose_name='سال تولد', null=True)
+    first_name = models.CharField(verbose_name='نام', max_length=30)
+    last_name = models.CharField(verbose_name='نام خانوادگی', max_length=150)
+    father_name = models.CharField(verbose_name='نام پدر', max_length=30, null=True, blank=True)
+    personnel_code = models.CharField(verbose_name='شماره پرسنلی', max_length=8, null=False, unique=True)
+    national_code = models.CharField(verbose_name='کد ملی', max_length=10, null=False, unique=True)
+    year_of_birth = models.IntegerField(verbose_name='سال تولد', null=True, blank=True)
     mobile = models.CharField(verbose_name='موبایل', max_length=15, null=True)
 
-    @classmethod
-    def get_user_by_username(cls, username):
-        try:
-            return User.objects.get(username=username)
-        except User.DoesNotExist:
-            return None
-
-    @classmethod
-    def get_user_by_id(cls, user_id):
-        try:
-            return User.objects.get(pk=user_id)
-        except User.DoesNotExist:
-            return None
+    objects = UserManager()
 
     def get_name(self):
         if self.first_name or self.last_name:
@@ -45,7 +51,17 @@ class User(AbstractUser):
     def __str__(self):
         return self.get_name()
 
-    def change_username_and_password(self, new_username, new_password):
+    def is_admin(self):
+        if hasattr(self, 'admin'):
+            return True
+        return False
+
+    def is_employee(self):
+        if hasattr(self, 'employee'):
+            return True
+        return False
+
+    def change_username_and_password(self, new_username, new_password):  # TODO not used
         self.username = new_username
         self.set_password(new_password)
         try:
@@ -54,40 +70,9 @@ class User(AbstractUser):
             raise RepetitiousUsername()
 
 
-class GeneralAdmin(User):
-    @classmethod
-    def create(cls, **kwargs):
-        ga = GeneralAdmin(**kwargs)
-        ga.set_password(kwargs.get('password'))
-        ga.save()
-        return ga
-
-    @staticmethod
-    def add_user(username, password, first_name, last_name, father_name,
-                 personnel_code, national_code, year_of_birth, mobile):
-        User(username=username, password=password, first_name=first_name, last_name=last_name, father_name=father_name,
-             personnel_code=personnel_code, national_code=national_code, year_of_birth=year_of_birth, mobile=mobile)
-
-    @staticmethod
-    def delete_user(user):
-        user.delete()
+class Admin(User):
+    pass
 
 
 class Employee(User):
-    @classmethod
-    def create(cls, **kwargs):
-        e = Employee(**kwargs)
-        e.set_password(kwargs.get('password'))
-        e.save()
-        return e
-
-    unit = models.ForeignKey(Unit, verbose_name='واحد', on_delete=models.CASCADE)
-
-
-class UnitAdmin(Employee):
-    @classmethod
-    def create(cls, **kwargs):
-        ua = UnitAdmin(**kwargs)
-        ua.set_password(kwargs.get('password'))
-        ua.save()
-        return ua
+    units = models.ManyToManyField(Unit, verbose_name='واحدها')

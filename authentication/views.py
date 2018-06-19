@@ -1,13 +1,13 @@
-from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
-from django.shortcuts import render, redirect, reverse
-from django.contrib import messages
-from .exceptions import FailedLogin, RepetitiousUsername
-from .models import User
-from . import forms
 from django.contrib.auth import views as auth_views
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.shortcuts import reverse
+from django.views.generic.edit import CreateView, UpdateView
+
+from . import forms
+from .models import Employee
 
 
+# TODO set permissions on every class
 class LoginView(auth_views.LoginView):
     template_name = 'authentication/login.html'
     redirect_authenticated_user = True
@@ -16,65 +16,36 @@ class LoginView(auth_views.LoginView):
         return reverse('employee_list')
 
 
-class LogoutView(auth_views.LogoutView):
+class LogoutView(LoginRequiredMixin, auth_views.LogoutView):
     template_name = 'authentication/logout.html'
 
 
-def add_user(request):
-    if request.method == 'POST':
-        form = forms.AddEmployeeForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'ثبت شد')
-            form = forms.AddEmployeeForm()
-        else:
-            messages.error(request, 'ثبت نشد')
-    else:
-        form = forms.AddEmployeeForm()
+class AddEmployeeView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    model = Employee
+    template_name_suffix = '_add'
+    form_class = forms.AddEmployeeForm
 
-    return render(request, 'authentication/add-user.html', {'form': form})
+    def test_func(self):
+        if self.request.user.is_admin():
+            return True
+        return False
 
-
-def login(request):
-    if request.method == 'POST':
-        form = forms.LoginForm(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            try:
-                User.login(request, username, password)
-                messages.success(request, 'با موفقیت وارد شدید')
-                return redirect('employee_list')  # TODO Change
-            except FailedLogin:
-                messages.error(request, 'عدم تطابق نام کاربری با گذرواژه')
-    else:
-        form = forms.LoginForm()
-
-    return render(request, 'authentication/login.html', {'form': form})
+    def get_success_url(self):
+        return reverse('employee_list')
 
 
-@login_required
-def change_username_or_password(request):
-    if request.method == 'POST':
-        form = forms.ChangeUsernameOrPasswordForm(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            try:
-                request.user.change_username_and_password(username, password)
-                messages.success(request, 'انجام شد')
-                return redirect('login')
-            except RepetitiousUsername:
-                messages.error(request, 'نام کاربری تکراری است')
-    else:
-        form = forms.ChangeUsernameOrPasswordForm()
+class UpdateUsernameOrPasswordViewForEmployee(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Employee
+    form_class = forms.ChangeUsernameOrPasswordForm
+    template_name_suffix = '_update'
 
-    return render(request, 'authentication/change-username-or-password.html', {'form': form})
+    def test_func(self):
+        if self.request.user.is_employee():
+            return True
+        return False
 
+    def get_object(self):
+        return self.request.user.employee
 
-def delete_user(request, user_id):  # TODO Delete this
-    user = User.get_user_by_id(user_id)
-    if user:
-        user.delete()
-        return HttpResponse('انجام شد')
-    return HttpResponse('کاربر یافت نشد')
+    def get_success_url(self):
+        return reverse('login')
