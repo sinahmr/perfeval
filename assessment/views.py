@@ -29,7 +29,7 @@ def employee_list(request):
     return render(request, 'assessment/employee-list.html', {})
 
 
-def show_emplo(request, employee_id):
+def show_employee(request, employee_id):
     return render(request, 'assessment/show-employee.html', {
         'has_assessment': True if employee_id % 2 == 0 else False
     })

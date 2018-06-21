@@ -33,17 +33,19 @@
                         <table class="table table-hover" style="border: 2px solid black; ">
                           <thead class="thead-dark">
                             <tr>
-                              <th scope="col">#</th>
-                              <th scope="col">نام کاربر</th>
-                              <th scope="col"> انجام ارزیابی</th>
+                                <th scope="col">#</th>
+                                <th scope="col">نام کاربر</th>
+                                <th scope="col"> نام ارزیاب</th>
+                                <th scope="col"> نام ارزیاب</th>
                             </tr>
                           </thead>
                           <tbody>
-                                {% for assessed in assesseds %}
+                                {% for assessment in assessments %}
                                     <tr>
-                                      <th scope="row">{{ forloop.counter }}</th>
-                                      <td>{{ assessed.get_name }}</td>
-                                      <td> <a style="color: #721c24;"></a></td>
+                                        <th scope="row">{{ forloop.counter }}</th>
+                                        <td>{{ assessment.assessor.get_name }}</td>
+                                        <td>{{ assessment.assessed.get_name }}</td>
+                                        <td>{{ assessment.assessed.get_name }}</td>
                                     </tr>
                                 {% endfor %}
                           </tbody>
