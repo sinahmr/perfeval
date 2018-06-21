@@ -50,7 +50,7 @@ def employee_list(request):
     return render(request, 'assessment/employee-list.html', {})
 
 
-class ShowEmployeeView(LoginRequiredMixin, UserPassesTestMixin,DetailView):
+class ShowEmployeeView(LoginRequiredMixin, UserPassesTestMixin,TemplateView):
     model = Employee
     template_name = 'assessment/show-employee.html'
 
@@ -58,14 +58,14 @@ class ShowEmployeeView(LoginRequiredMixin, UserPassesTestMixin,DetailView):
         if self.request.user.is_admin():
             return True
         if self.request.user.is_employee():
-            if self.request.user.id == self.kwargs.get(self.pk_url_kwarg):
-                print(self.kwargs.get(self.pk_url_kwarg))
+            if self.request.user.id == self.kwargs.get("pk"):
+                print(self.kwargs.get("pk"))
                 return True
         return False
 
     def get_context_data(self, **kwargs):
         context = super(ShowEmployeeView, self).get_context_data(**kwargs)
-        employee = self.get_object(self)
+        employee = Employee.objects.get_by_id(self.kwargs.get("pk"))
         if employee:
             assessments = employee.assessments_as_assessed.all()
         else:
