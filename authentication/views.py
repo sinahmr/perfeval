@@ -14,9 +14,9 @@ class LoginView(auth_views.LoginView):
 
     def get_success_url(self):
         if self.request.user.is_employee():
-            return reverse('assessment_list')
-        else:
             return reverse('show_my_details')
+        else:
+            return reverse('employee_list')
 
 
 class LogoutView(LoginRequiredMixin, auth_views.LogoutView):
