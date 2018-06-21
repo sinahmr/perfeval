@@ -18,7 +18,7 @@ class AssessedsListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
     def get_queryset(self):
         assessor = self.request.user.employee
-        return assessor.get_assesseds()
+        return assessor.get_assesseds
 
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get the context
