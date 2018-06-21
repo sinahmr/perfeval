@@ -76,3 +76,11 @@ class Admin(User):
 
 class Employee(User):
     units = models.ManyToManyField(Unit, verbose_name='واحدها')
+
+    @property
+    def get_assesseds(self):
+        assessments = self.assessments_as_assessor.all()
+        assesseds = []
+        for assessment in assessments:
+            assesseds.append(assessment.assessed)
+        return assesseds
