@@ -64,8 +64,11 @@ class ShowEmployeeView(LoginRequiredMixin, UserPassesTestMixin,DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(ShowEmployeeView, self).get_context_data(**kwargs)
-        employee= Employee.objects.get_by_id(self.pk_url_kwarg)
-        assessments = employee.assessments_as_assessed.all()
+        employee = Employee.objects.get(id=self.pk_url_kwarg)
+        if employee:
+            assessments = employee.assessments_as_assessed.all()
+        else:
+            assessments = []
         has_assessment = True
         if assessments is None or len(assessments)<1:
             has_assessment = False
