@@ -63,8 +63,8 @@ class ShowEmployeeView(LoginRequiredMixin, UserPassesTestMixin,DetailView):
         return False
 
     def get_context_data(self, **kwargs):
-        context = super(ShowMyDetailsView, self).get_context_data(**kwargs)
-        employee= Employee.objects.get_by_id(self.request.user.id)
+        context = super(ShowEmployeeView, self).get_context_data(**kwargs)
+        employee= Employee.objects.get_by_id(self.pk_url_kwarg)
         assessments = employee.assessments_as_assessed.all()
         has_assessment = True
         if assessments is None or len(assessments)<1:
@@ -78,6 +78,9 @@ class ShowEmployeeView(LoginRequiredMixin, UserPassesTestMixin,DetailView):
 class ShowMyDetailsView(LoginRequiredMixin, UserPassesTestMixin,TemplateView):
     model = Employee
     template_name = 'assessment/show-employee.html'
+
+    def test_func(self):
+        return True
 
     def get_context_data(self, **kwargs):
         context = super(ShowMyDetailsView, self).get_context_data(**kwargs)

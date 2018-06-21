@@ -6,7 +6,7 @@ urlpatterns = [
     # path('criterion/list/', views.criterion_list, name='criterion_list'),
 
      path('employee/list/', views.employee_list, name='employee_list'),
-     path('employee/show/<int:pk>', views.ShowEmployeeView.as_view(), name='show_employee'),
+     path('employee/show/<int:pk>/', views.ShowEmployeeView.as_view(), name='show_employee'),
      path('employee/home/', views.ShowMyDetailsView.as_view(), name='show_my_details'),
 
     path('eval/list/', views.EmployeesListView.as_view(), name='assessment_list'),

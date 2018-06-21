@@ -36,7 +36,9 @@
                                 <th scope="col">#</th>
                                 <th scope="col">نام کاربر</th>
                                 <th scope="col"> نام ارزیاب</th>
-                                <th scope="col"> نام ارزیاب</th>
+                                <th scope="col"> نام معیار</th>
+                                <th scope="col"> معیار کیفی</th>
+                                <th scope="col"> معیار کمی</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -45,7 +47,12 @@
                                         <th scope="row">{{ forloop.counter }}</th>
                                         <td>{{ assessment.assessor.get_name }}</td>
                                         <td>{{ assessment.assessed.get_name }}</td>
-                                        <td>{{ assessment.assessed.get_name }}</td>
+                                        {% for sc in assessment.scale_answers.all %}
+                                            <td>{{ sc.scale.title }}</td>
+                                            <td>{{ sc.qualitativeAnswer }}</td>
+                                            <td>{{ sc.quantitativeAnswer }}</td>
+                                        {% endfor %}
+
                                     </tr>
                                 {% endfor %}
                           </tbody>
