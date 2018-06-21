@@ -4,11 +4,35 @@
 
 {% block content %}
     <h2>لیست ارزیابی‌های در دست انجام</h2>
-    <div>
-        <ul>
-            <li>احمد احمدی&nbsp;<a href="#">(ارزیابی)</a></li>
-            <li>حسن حسنی&nbsp;<a href="#">(ارزیابی)</a></li>
-            <li>علی علوی&nbsp;<a href="#">(ارزیابی)</a></li>
-        </ul>
-    </div>
+
+    {% if notFound %}
+        <h3>کاربری جهت ارزیابی یافت نشد</h3>
+    {% else %}
+        <table class="table table-hover" style="border: 2px solid black; ">
+          <thead class="thead-dark">
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">نام کاربر</th>
+              <th scope="col"> انجام ارزیابی</th>
+            </tr>
+          </thead>
+          <tbody>
+                {% for assessed in assesseds %}
+                    <tr>
+                      <th scope="row">{{ forloop.counter }}</th>
+                      <td>{{ assessed.get_name }}</td>
+                      <td> <a style="color: #721c24;"></a></td>
+                    </tr>
+                {% endfor %}
+          </tbody>
+        </table>
+    {% endif %}
+
+{#    <div>#}
+{#        <ul>#}
+{#            <li>احمد احمدی&nbsp;<a href="#">(ارزیابی)</a></li>#}
+{#            <li>حسن حسنی&nbsp;<a href="#">(ارزیابی)</a></li>#}
+{#            <li>علی علوی&nbsp;<a href="#">(ارزیابی)</a></li>#}
+{#        </ul>#}
+{#    </div>#}
 {% endblock %}
