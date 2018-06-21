@@ -1,6 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import render
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, TemplateView
 
 from authentication.models import Employee
 from . import forms
@@ -63,7 +63,7 @@ class ShowEmployeeView(LoginRequiredMixin, UserPassesTestMixin,DetailView):
                 return True
         return False
 
-class ShowMyDetailsView(LoginRequiredMixin, UserPassesTestMixin,DetailView):
+class ShowMyDetailsView(LoginRequiredMixin, UserPassesTestMixin,TemplateView):
     model = Employee
     template_name = 'assessment/show-employee.html'
 
@@ -72,8 +72,10 @@ class ShowMyDetailsView(LoginRequiredMixin, UserPassesTestMixin,DetailView):
             return True
         return False
 
-    def get_queryset(self):
-        return Employee.objects.get_by_id(self.request.user.id)
+    def get_context_data(self, **kwargs):
+        context = super(ShowMyDetailsView, self).get_context_data(**kwargs)
+        context['employee']=Employee.objects.get_by_id(self.request.user.id)
+        return context
 
 
 
