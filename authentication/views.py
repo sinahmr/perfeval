@@ -16,7 +16,7 @@ class LoginView(auth_views.LoginView):
         if self.request.user.is_employee():
             return reverse('assessment_list')
         else:
-            return reverse('employee_list')
+            return reverse('show_my_details')
 
 
 class LogoutView(LoginRequiredMixin, auth_views.LogoutView):

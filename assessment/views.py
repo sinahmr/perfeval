@@ -1,6 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import render
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 
 from authentication.models import Employee
 from . import forms
@@ -50,12 +50,33 @@ class EmployeesListView(LoginRequiredMixin, UserPassesTestMixin,ListView):
 def employee_list(request):
     return render(request, 'assessment/employee-list.html', {})
 
-#
-def show_employee(request, employee_id):
-    return render(request, 'assessment/show-employee.html', {
-        'has_assessment': True if employee_id % 2 == 0 else False
-    })
-#
+
+class ShowEmployeeView(LoginRequiredMixin, UserPassesTestMixin,DetailView):
+    model = Employee
+    template_name = 'assessment/show-employee.html'
+
+    def test_func(self):
+        if self.request.user.is_admin():
+            return True
+        if self.request.user.is_employee():
+            if self.request.user.id == self.pk_url_kwarg:
+                return True
+        return False
+
+class ShowMyDetailsView(LoginRequiredMixin, UserPassesTestMixin,DetailView):
+    model = Employee
+    template_name = 'assessment/show-employee.html'
+
+    def test_func(self):
+        if self.request.user.is_employee():
+            return True
+        return False
+
+    def get_queryset(self):
+        return Employee.objects.get_by_id(self.request.user.id)
+
+
+
 #
 # def assessment_list(request):
 #     return render(request, 'assessment/assessment-list.html', {})
