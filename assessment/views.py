@@ -1,12 +1,13 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import render
-from django.views.generic import ListView, DetailView, TemplateView
+from django.views.generic import ListView, DetailView, TemplateView, CreateView, FormView
 
+from assessment.models import Scale, PunishmentReward, Assessment
 from authentication.models import Employee
 from . import forms
 
 
-class EmployeesListView(LoginRequiredMixin, UserPassesTestMixin,ListView):
+class AssessedsListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     context_object_name = 'assesseds'
     template_name = 'assessment/assessment-list.html'
 
@@ -25,7 +26,7 @@ class EmployeesListView(LoginRequiredMixin, UserPassesTestMixin,ListView):
 
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get the context
-        context = super(EmployeesListView, self).get_context_data(**kwargs)
+        context = super(AssessedsListView, self).get_context_data(**kwargs)
         # Create any data and add it to the context
         not_found=False
         if self.get_queryset() is None or len(self.get_queryset()) < 1:
@@ -33,21 +34,31 @@ class EmployeesListView(LoginRequiredMixin, UserPassesTestMixin,ListView):
         context['not_found'] = not_found
         return context
 
-# def add_criterion(request):
-#     if request.method == 'POST':
-#         form = forms.AddCriterionForm(request.POST)
-#     else:
-#         form = forms.AddCriterionForm()
-#
-#     return render(request, 'assessment/add-criterion.html', {'form': form})
-#
-#
-# def criterion_list(request):
-#     return render(request, 'assessment/criterion-list.html', {})
-#
-#
-def employee_list(request):
-    return render(request, 'assessment/employee-list.html', {})
+
+class AddScaleView(LoginRequiredMixin,UserPassesTestMixin,FormView):
+
+    template_name = "assessment/add-scale.html"
+    form_class = forms.AddScaleForm
+
+    def test_func(self):
+        return True
+
+
+class ScaleListView(LoginRequiredMixin,UserPassesTestMixin,ListView):
+
+    template_name = "assessment/scale-list.html"
+    model = Scale
+
+    def test_func(self):
+        return True
+
+
+class EmployeesListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    template_name = "assessment/employee-list.html"
+    model = Employee
+
+    def test_func(self):
+        return True
 
 
 class ShowEmployeeView(LoginRequiredMixin, UserPassesTestMixin,TemplateView):
@@ -99,11 +110,28 @@ class ShowMyDetailsView(LoginRequiredMixin, UserPassesTestMixin,TemplateView):
         return context
 
 
+class PunishmentRewardListView(LoginRequiredMixin,UserPassesTestMixin,ListView):
 
-#
-# def assessment_list(request):
-#     return render(request, 'assessment/assessment-list.html', {})
-#
-#
-# def assess(request, employee_id):
-#     return render(request, 'assessment/assess.html', {})
+    template_name = "assessment/scale-list.html"
+    model = PunishmentReward
+
+    def test_func(self):
+        return True
+
+
+class DoAssessmentView(LoginRequiredMixin,UserPassesTestMixin,CreateView):
+
+    template_name = "assessment/scale-list.html"
+    model = Assessment
+
+    def test_func(self):
+        return True
+
+
+class SetPunishmentRewardView(LoginRequiredMixin,UserPassesTestMixin,CreateView):
+
+    template_name = "assessment/scale-list.html"
+    model = PunishmentReward
+
+    def test_func(self):
+        return True

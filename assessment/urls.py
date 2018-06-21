@@ -2,13 +2,11 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    # path('criterion/add/', views.add_criterion, name='add_criterion'),
-    # path('criterion/list/', views.criterion_list, name='criterion_list'),
-
-     path('employee/list/', views.employee_list, name='employee_list'),
+     path('scale/add/', views.AddScaleView.as_view(), name='add_scale'),
+     path('scale/list/', views.ScaleListView.as_view(), name='scale_list'),
+     path('employee/list/', views.EmployeesListView.as_view(), name='employee_list'),
      path('employee/show/<int:pk>/', views.ShowEmployeeView.as_view(), name='show_employee'),
      path('employee/home/', views.ShowMyDetailsView.as_view(), name='show_my_details'),
-
-    path('eval/list/', views.EmployeesListView.as_view(), name='assessment_list'),
-    # path('eval/<int:employee_id>', views.assess, name='assess'),
+     path('assessment/list/', views.AssessedsListView.as_view(), name='assessment_list'),
+     path('assessment/<int:pk>', views.AssessorsListView.as_view(), name='assessors'),
 ]
