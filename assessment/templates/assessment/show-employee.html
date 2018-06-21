@@ -7,108 +7,108 @@
     <div>
         <table>
             <tr>
-                <td>نام</td>
-                <td>علی</td>
+                <td>نام و نام خوانوادگی</td>
+                <td> {{ user.get_name }}</td>
             </tr>
-            <tr>
-                <td>نام خانوادگی</td>
-                <td>علوی</td>
-            </tr>
-            <tr>
-                <td>شماره پرسنلی</td>
-                <td>۳۱۰۴۹۱۱۲</td>
-            </tr>
-            <tr>
-                <td>واحد</td>
-                <td>حسابداری</td>
-            </tr>
-            <tr>
-                <td>نوع</td>
-                <td>مدیر واحد</td>
-            </tr>
-            <tr>
-                <td>ارز یاب</td>
-                <td>
-                    {% if has_assessment %}
-                        <span>فلانی</span>
-                    {% else %}
-                        <select>
-                            <option value="null">تعیین نشده</option>
-                            <option value="">بهمان</option>
-                            <option value="">فلان</option>
-                        </select>
-                        <button>ثبت ارزیاب</button>
-                        <span>&nbsp;&nbsp;&nbsp;</span><a href="#">افزودن یک ارزیاب جدید به سیستم</a>
-                    {% endif %}
-                </td>
-            </tr>
+{#            <tr>#}
+{#                <td>ارزیاب</td>#}
+{#                <td>#}
+{#                    {% if has_assessment %}#}
+{#                        <span>فلانی</span>#}
+{#                    {% else %}#}
+{#                        <select>#}
+{#                            <option value="null">تعیین نشده</option>#}
+{#                            <option value="">بهمان</option>#}
+{#                            <option value="">فلان</option>#}
+{#                        </select>#}
+{#                        <button>ثبت ارزیاب</button>#}
+{#                        <span>&nbsp;&nbsp;&nbsp;</span><a href="#">افزودن یک ارزیاب جدید به سیستم</a>#}
+{#                    {% endif %}#}
+{#                </td>#}
+{#            </tr>#}
             <tr>
                 <td>نتیجه‌ی ارزیابی</td>
                 <td>
                     {% if has_assessment %}
-                        <div>
-                            <table>
-                                <tr>
-                                    <td>نام معیار</td>
-                                    <td>تست</td>
-                                </tr>
-                                <tr>
-                                    <td>توضیحات معیار</td>
-                                    <td>تست</td>
-                                </tr>
-                                <tr>
-                                    <td>پاسخ کمی</td>
-                                    <td>۴</td>
-                                </tr>
-                                <tr>
-                                    <td>پاسخ کیفی</td>
-                                    <td>خیلی خوب</td>
-                                </tr>
-                            </table>
-                            <hr/>
-                            <table>
-                                <tr>
-                                    <td>نام معیار</td>
-                                    <td>تست ۲</td>
-                                </tr>
-                                <tr>
-                                    <td>توضیحات معیار</td>
-                                    <td>تست ۲</td>
-                                </tr>
-                                <tr>
-                                    <td>پاسخ کمی</td>
-                                    <td>۶</td>
-                                </tr>
-                                <tr>
-                                    <td>پاسخ کیفی</td>
-                                    <td>-</td>
-                                </tr>
-                            </table>
-                            <hr/>
-                            <table>
-                                <tr>
-                                    <td>نظر کلی</td>
-                                    <td>به نظر من...</td>
-                                </tr>
-                            </table>
-                        </div>
+                        <table class="table table-hover" style="border: 2px solid black; ">
+                          <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">نام کاربر</th>
+                                <th scope="col"> نام ارزیاب</th>
+                                <th scope="col"> نام ارزیاب</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                                {% for assessment in assessments %}
+                                    <tr>
+                                        <th scope="row">{{ forloop.counter }}</th>
+                                        <td>{{ assessment.assessor.get_name }}</td>
+                                        <td>{{ assessment.assessed.get_name }}</td>
+                                        <td>{{ assessment.assessed.get_name }}</td>
+                                    </tr>
+                                {% endfor %}
+                          </tbody>
+                        </table>
+{#                        <div>#}
+{#                            <table>#}
+{#                                <tr>#}
+{#                                    <td>نام معیار</td>#}
+{#                                    <td>تست</td>#}
+{#                                </tr>#}
+{#                                <tr>#}
+{#                                    <td>توضیحات معیار</td>#}
+{#                                    <td>تست</td>#}
+{#                                </tr>#}
+{#                                <tr>#}
+{#                                    <td>پاسخ کمی</td>#}
+{#                                    <td>۴</td>#}
+{#                                </tr>#}
+{#                                <tr>#}
+{#                                    <td>پاسخ کیفی</td>#}
+{#                                    <td>خیلی خوب</td>#}
+{#                                </tr>#}
+{#                            </table>#}
+{#                            <hr/>#}
+{#                            <table>#}
+{#                                <tr>#}
+{#                                    <td>نام معیار</td>#}
+{#                                    <td>تست ۲</td>#}
+{#                                </tr>#}
+{#                                <tr>#}
+{#                                    <td>توضیحات معیار</td>#}
+{#                                    <td>تست ۲</td>#}
+{#                                </tr>#}
+{#                                <tr>#}
+{#                                    <td>پاسخ کمی</td>#}
+{#                                    <td>۶</td>#}
+{#                                </tr>#}
+{#                                <tr>#}
+{#                                    <td>پاسخ کیفی</td>#}
+{#                                    <td>-</td>#}
+{#                                </tr>#}
+{#                            </table>#}
+{#                            <hr/>#}
+{#                            <table>#}
+{#                                <tr>#}
+{#                                    <td>نظر کلی</td>#}
+{#                                    <td>به نظر من...</td>#}
+{#                                </tr>#}
+{#                            </table>#}
+{#                        </div>#}
                     {% else %}
                         <span>ارزیابی نشده است</span>
                     {% endif %}
                 </td>
             </tr>
-            <tr>
-                <td>روش تنبیه یا تشویق</td>
-                <td>
-                    <input type="text" placeholder="">
-                    <button>ثبت</button>
-                </td>
-            </tr>
+{#            <tr>#}
+{#                <td>روش تنبیه یا تشویق</td>#}
+{#                <td>#}
+{#                    <input type="text" placeholder="">#}
+{#                    <button>ثبت</button>#}
+{#                </td>#}
+{#            </tr>#}
         </table>
 
-        {% if has_assessment %}
-
-        {% else %}
-        {% endif %}
     </div>
 {% endblock %}
