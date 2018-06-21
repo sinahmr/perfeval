@@ -1,7 +1,7 @@
 from django import forms
 
 
-class AddCriterionForm(forms.Form):
+class AddScaleForm(forms.Form):
     title = forms.CharField(label='عنوان', max_length=50)
     description = forms.CharField(label='توضیحات', widget=forms.Textarea(attrs={'rows': 2, 'cols': 50}), required=False)
     quantitative_criterion_formula = forms.CharField(label='فرمول محاسبه‌ی کمی', max_length=200, required=False)

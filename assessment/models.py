@@ -37,7 +37,7 @@ class ScaleAnswer(models.Model):
     qualitativeAnswer = models.CharField(max_length=100,null=False,blank=False)
     quantitativeAnswer = models.CharField(max_length=100,null=False,blank=False)
 
-class PunnishmentReward(models.Model):
+class PunishmentReward(models.Model):
     method = models.TextField(null=False, blank=False)
     type = models.NullBooleanField(null=True)
     season = models.ForeignKey(Season,on_delete=models.CASCADE, related_name="punishment_rewards", related_query_name="punishment_rewards", null=False,
