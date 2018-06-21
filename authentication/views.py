@@ -13,7 +13,10 @@ class LoginView(auth_views.LoginView):
     redirect_authenticated_user = True
 
     def get_success_url(self):
-        return reverse('employee_list')
+        if self.request.user.is_employee():
+            return reverse('assessment_list')
+        else:
+            return reverse('employee_list')
 
 
 class LogoutView(LoginRequiredMixin, auth_views.LogoutView):

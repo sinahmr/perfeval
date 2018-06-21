@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import render
 from django.views.generic import ListView
 
@@ -5,15 +6,22 @@ from authentication.models import Employee
 from . import forms
 
 
-class EmployeesListView(ListView):
+class EmployeesListView(LoginRequiredMixin, UserPassesTestMixin,ListView):
     context_object_name = 'assesseds'
     template_name = 'assessment/assessment-list.html'
 
+    def test_func(self):
+        if self.request.user.is_employee():
+            return True
+        return False
+
     def get_queryset(self):
-        user=self.request.user
-        if user.is_employee():
-            return Employee.objects.all()
-        return None
+        assessor=self.request.user.employee
+        assessments = assessor.assessments_as_assessor.all()
+        assesseds=[]
+        for assessment in assessments:
+            assesseds.append(assessment.assessed)
+        return assesseds
 
 # def add_criterion(request):
 #     if request.method == 'POST':
