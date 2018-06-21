@@ -5,8 +5,8 @@
 {% block content %}
     <h2>لیست ارزیابی‌های در دست انجام</h2>
 
-    {% if notFound %}
-        <h3>کاربری جهت ارزیابی یافت نشد</h3>
+    {% if not_found %}
+        <h3 style="color: crimson">کاربری جهت ارزیابی یافت نشد</h3>
     {% else %}
         <table class="table table-hover" style="border: 2px solid black; ">
           <thead class="thead-dark">
@@ -21,7 +21,7 @@
                     <tr>
                       <th scope="row">{{ forloop.counter }}</th>
                       <td>{{ assessed.get_name }}</td>
-                      <td> <a style="color: #721c24;"></a></td>
+                      <td> <a style="color: #721c24;">انجام ارزیابی</a></td>
                     </tr>
                 {% endfor %}
           </tbody>

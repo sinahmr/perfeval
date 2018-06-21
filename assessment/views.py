@@ -47,10 +47,10 @@ class EmployeesListView(LoginRequiredMixin, UserPassesTestMixin,ListView):
 #     return render(request, 'assessment/criterion-list.html', {})
 #
 #
-# def employee_list(request):
-#     return render(request, 'assessment/employee-list.html', {})
-#
-#
+def employee_list(request):
+    return render(request, 'assessment/employee-list.html', {})
+
+
 class ShowEmployeeView(LoginRequiredMixin, UserPassesTestMixin,DetailView):
     model = Employee
     template_name = 'assessment/show-employee.html'
@@ -76,7 +76,7 @@ class ShowMyDetailsView(LoginRequiredMixin, UserPassesTestMixin,DetailView):
         return Employee.objects.get_by_id(self.request.user.id)
 
 
-#
+
 #
 # def assessment_list(request):
 #     return render(request, 'assessment/assessment-list.html', {})
