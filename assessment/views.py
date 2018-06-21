@@ -58,13 +58,14 @@ class ShowEmployeeView(LoginRequiredMixin, UserPassesTestMixin,DetailView):
         if self.request.user.is_admin():
             return True
         if self.request.user.is_employee():
-            if self.request.user.id == self.pk_url_kwarg:
+            if self.request.user.id == self.kwargs.get(self.pk_url_kwarg):
+                print(self.kwargs.get(self.pk_url_kwarg))
                 return True
         return False
 
     def get_context_data(self, **kwargs):
         context = super(ShowEmployeeView, self).get_context_data(**kwargs)
-        employee = Employee.objects.get(id=self.pk_url_kwarg)
+        employee = self.get_object(self)
         if employee:
             assessments = employee.assessments_as_assessed.all()
         else:
