@@ -23,6 +23,17 @@ class EmployeesListView(LoginRequiredMixin, UserPassesTestMixin,ListView):
             assesseds.append(assessment.assessed)
         return assesseds
 
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get the context
+        context = super(EmployeesListView, self).get_context_data(**kwargs)
+        # Create any data and add it to the context
+        if self.get_queryset() is None or len(self.get_queryset()) < 1:
+            not_found=True
+        else:
+            not_found=False
+        context['not_found'] = not_found
+        return context
+
 # def add_criterion(request):
 #     if request.method == 'POST':
 #         form = forms.AddCriterionForm(request.POST)
