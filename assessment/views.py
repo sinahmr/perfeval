@@ -58,6 +58,7 @@ class ShowEmployeeView(LoginRequiredMixin, UserPassesTestMixin,TemplateView):
         if self.request.user.is_admin():
             return True
         if self.request.user.is_employee():
+            print("Hello")
             if self.request.user.id == self.kwargs.get("pk"):
                 print(self.kwargs.get("pk"))
                 return True
