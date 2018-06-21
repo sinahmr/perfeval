@@ -11,8 +11,9 @@ class EmployeesListView(ListView):
 
     def get_queryset(self):
         user=self.request.user
-        if user.is_employee():
-            return Employee.objects.all()
+        a = Employee.objects.all()
+        print(a)
+        return Employee.objects.all()
         return None
 
 # def add_criterion(request):
