@@ -27,10 +27,9 @@ class EmployeesListView(LoginRequiredMixin, UserPassesTestMixin,ListView):
         # Call the base implementation first to get the context
         context = super(EmployeesListView, self).get_context_data(**kwargs)
         # Create any data and add it to the context
+        not_found=False
         if self.get_queryset() is None or len(self.get_queryset()) < 1:
             not_found=True
-        else:
-            not_found=False
         context['not_found'] = not_found
         return context
 
@@ -63,18 +62,33 @@ class ShowEmployeeView(LoginRequiredMixin, UserPassesTestMixin,DetailView):
                 return True
         return False
 
+    def get_context_data(self, **kwargs):
+        context = super(ShowMyDetailsView, self).get_context_data(**kwargs)
+        employee= Employee.objects.get_by_id(self.request.user.id)
+        assessments = employee.assessments_as_assessed.all()
+        has_assessment = True
+        if assessments is None or len(assessments)<1:
+            has_assessment = False
+        context['employee'] = employee
+        context['assessments'] = assessments
+        context['has_assessment'] = has_assessment
+        return context
+
+
 class ShowMyDetailsView(LoginRequiredMixin, UserPassesTestMixin,TemplateView):
     model = Employee
     template_name = 'assessment/show-employee.html'
 
-    def test_func(self):
-        if self.request.user.is_employee():
-            return True
-        return False
-
     def get_context_data(self, **kwargs):
         context = super(ShowMyDetailsView, self).get_context_data(**kwargs)
-        context['employee']=Employee.objects.get_by_id(self.request.user.id)
+        employee = Employee.objects.get_by_id(self.request.user.id)
+        assessments = employee.assessments_as_assessed.all()
+        has_assessment = True
+        if assessments is None or len(assessments) < 1:
+            has_assessment = False
+        context['employee'] = employee
+        context['assessments'] = assessments
+        context['has_assessment'] = has_assessment
         return context
 
 
