@@ -1,6 +1,16 @@
 from django.shortcuts import render
+from django.views.generic import ListView
+
 from . import forms
 
+
+class EmployeesListView(ListView):
+    context_object_name = 'assesseds'
+    template_name = 'assessment/assessment-list.html'
+
+    def get_queryset(self):
+        user=self.request.user
+        return
 
 def add_criterion(request):
     if request.method == 'POST':
@@ -19,7 +29,7 @@ def employee_list(request):
     return render(request, 'assessment/employee-list.html', {})
 
 
-def show_employee(request, employee_id):
+def show_emplo(request, employee_id):
     return render(request, 'assessment/show-employee.html', {
         'has_assessment': True if employee_id % 2 == 0 else False
     })
