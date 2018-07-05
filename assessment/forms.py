@@ -1,5 +1,7 @@
 from django import forms
 
+from . import models
+
 
 class AddScaleForm(forms.Form):
     title = forms.CharField(label='عنوان', max_length=50)
@@ -11,12 +13,25 @@ class AddScaleForm(forms.Form):
     interpretation_rule = forms.CharField(label='نحوه‌ی تفسیر', widget=forms.Textarea(attrs={'rows': 2, 'cols': 50}))
 
     def clean(self):
-        quan = self.cleaned_data.get('qualitative_criterion_choices', '')
+        quan = self.cleaned_data.get('quantitative_criterion_choices', '')
         qual = self.cleaned_data.get('qualitative_criterion_choices', '')
         if not quan and not qual:
             raise forms.ValidationError('باید حداقل یکی از موارد «فرمول محاسبه‌ی کمی» یا «گزینه‌های کیفی» را پر کنید')
-        self.cleaned_data['qualitative_choices'] = qual.split('\n')
 
 
-class AssessFrom(forms.Form):
-    pass
+class ScaleAnswerForm(forms.ModelForm):
+    class Meta:
+        model = models.ScaleAnswer
+        fields = ['qualitativeAnswer', 'quantitativeAnswer']
+
+    def __init__(self, *args, **kwargs):
+        super(ScaleAnswerForm, self).__init__(*args, **kwargs)
+        choices = self.instance.scale.qualitativeCriterion.get_choices_list()
+        choices = [(c, c) for c in choices]
+        self.fields['qualitativeAnswer'] = forms.ChoiceField(label='پاسخ کیفی', choices=choices)
+
+    def clean(self):
+        quan = self.cleaned_data.get('qualitativeAnswer', '')
+        qual = self.cleaned_data.get('quantitativeAnswer', '')
+        if not quan and not qual:
+            raise forms.ValidationError('پاسخ را وارد کنید')

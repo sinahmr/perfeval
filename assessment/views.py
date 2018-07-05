@@ -1,7 +1,8 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.views.generic import ListView, TemplateView, CreateView, FormView
+from django.urls import reverse
+from django.views.generic import ListView, TemplateView, CreateView, FormView, UpdateView
 
-from assessment.models import Scale, PunishmentReward, Assessment
+from assessment.models import Scale, PunishmentReward, ScaleAnswer
 from authentication.models import Employee
 from . import forms
 
@@ -111,12 +112,25 @@ class PunishmentRewardListView(LoginRequiredMixin, UserPassesTestMixin, ListView
         return True
 
 
-class DoAssessmentView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
-    template_name = "assessment/scale-list.html"
-    model = Assessment
+class DoAssessmentView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = ScaleAnswer
+    form_class = forms.ScaleAnswerForm
+    template_name = 'assessment/assess.html'
 
     def test_func(self):
-        return True
+        if self.request.user.is_employee():
+            return True
+        return False
+
+    def get_context_data(self, **kwargs):
+        context = super(DoAssessmentView, self).get_context_data(**kwargs)
+        sa = self.get_object()
+        context['assessed'] = sa.assessment.assessed.get_user()
+        context['scale'] = sa.scale
+        return context
+
+    def get_success_url(self):
+        return reverse('assessment_list')
 
 
 class SetPunishmentRewardView(LoginRequiredMixin, UserPassesTestMixin, CreateView):

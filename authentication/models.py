@@ -27,6 +27,9 @@ class Employee(Job):
     def get_assesseds(self):
         return self.assessments_as_assessor.all()  # TODO should not show all, should show not considered ones
 
+    def get_user(self):
+        return User.objects.filter(job_id=self.pk).first()
+
     def get_units(self):
         return self.units
 
