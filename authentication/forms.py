@@ -1,6 +1,6 @@
 from django import forms
 
-from assessment.models import Assessment
+from assessment.models import Assessment, Scale
 from authentication.models import Employee
 from . import models
 
@@ -70,8 +70,8 @@ class ChangeUsernameOrPasswordForm(forms.ModelForm):
 
 
 class CreateAssessmentForm(forms.ModelForm):
-    assessor = forms.ModelChoiceField(label='ارزیاب', queryset=models.User.objects.empolyees() )
-    scales = forms.ModelMultipleChoiceField(label='معیار ها', queryset=models.User.objects.empolyees())
+    assessor = forms.ModelChoiceField(label='ارزیاب', queryset=models.User.objects.all().employees())
+    scales = forms.ModelMultipleChoiceField(label='معیار ها', queryset=Scale.objects.all())
 
     class Meta:
         model = Assessment
@@ -79,9 +79,9 @@ class CreateAssessmentForm(forms.ModelForm):
 
 
     def save(self, commit=True,*args, **kwargs):
-        asssessment = super(CreateAssessmentForm, self).save(commit=False,*args,**kwargs)
+        asssessment = super(CreateAssessmentForm, self).save(commit=False, *args,**kwargs)
         request = None
-        if kwargs.has_key('request'):
+        if 'request' in kwargs.keys():
             request = kwargs.pop('request')
         asssessment.set_season()
         asssessment.set_assessed(Employee.objects.get(id=request.user.id))

@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.views.generic import ListView, TemplateView, CreateView, FormView
 
 from assessment.models import Scale, PunishmentReward, Assessment
+from authentication.forms import CreateAssessmentForm
 from authentication.models import Employee
 from . import forms
 
@@ -77,6 +78,7 @@ class ShowEmployeeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         has_assessment = True
         if assessments is None or len(assessments) < 1:
             has_assessment = False
+        context['create_assessment_link'] = '/assessment/create/'+str(self.kwargs.get("pk"))+'/'
         context['employee'] = employee
         context['assessments'] = assessments
         context['has_assessment'] = has_assessment
@@ -111,6 +113,7 @@ class ShowMyDetailsView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 class CreateAssesment(LoginRequiredMixin, UserPassesTestMixin,CreateView):
     model = Assessment
     template_name = 'assessment/add-assessment.html'
+    form_class = CreateAssessmentForm
 
     def test_func(self):
         if self.request.user.is_admin():
