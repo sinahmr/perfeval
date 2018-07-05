@@ -1,6 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.shortcuts import render
-from django.views.generic import ListView, DetailView, TemplateView, CreateView, FormView
+from django.views.generic import ListView, TemplateView, CreateView, FormView
 
 from assessment.models import Scale, PunishmentReward, Assessment
 from authentication.models import Employee
@@ -17,22 +16,21 @@ class AssessedsListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         return False
 
     def get_queryset(self):
-        assessor = self.request.user.employee
+        assessor = self.request.user.get_employee()
         return assessor.get_assesseds
 
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get the context
         context = super(AssessedsListView, self).get_context_data(**kwargs)
         # Create any data and add it to the context
-        not_found=False
+        not_found = False
         if self.get_queryset() is None or len(self.get_queryset()) < 1:
-            not_found=True
+            not_found = True
         context['not_found'] = not_found
         return context
 
 
-class AddScaleView(LoginRequiredMixin,UserPassesTestMixin,FormView):
-
+class AddScaleView(LoginRequiredMixin, UserPassesTestMixin, FormView):
     template_name = "assessment/add-scale.html"
     form_class = forms.AddScaleForm
 
@@ -40,8 +38,7 @@ class AddScaleView(LoginRequiredMixin,UserPassesTestMixin,FormView):
         return True
 
 
-class ScaleListView(LoginRequiredMixin,UserPassesTestMixin,ListView):
-
+class ScaleListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     template_name = "assessment/scale-list.html"
     model = Scale
 
@@ -57,7 +54,7 @@ class EmployeesListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         return True
 
 
-class ShowEmployeeView(LoginRequiredMixin, UserPassesTestMixin,TemplateView):
+class ShowEmployeeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     model = Employee
     template_name = 'assessment/show-employee.html'
 
@@ -79,7 +76,7 @@ class ShowEmployeeView(LoginRequiredMixin, UserPassesTestMixin,TemplateView):
         else:
             assessments = []
         has_assessment = True
-        if assessments is None or len(assessments)<1:
+        if assessments is None or len(assessments) < 1:
             has_assessment = False
         context['employee'] = employee
         context['assessments'] = assessments
@@ -87,16 +84,18 @@ class ShowEmployeeView(LoginRequiredMixin, UserPassesTestMixin,TemplateView):
         return context
 
 
-class ShowMyDetailsView(LoginRequiredMixin, UserPassesTestMixin,TemplateView):
+class ShowMyDetailsView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     model = Employee
     template_name = 'assessment/show-employee.html'
 
     def test_func(self):
-        return True
+        if self.request.user.is_employee():
+            return True
+        return False
 
     def get_context_data(self, **kwargs):
         context = super(ShowMyDetailsView, self).get_context_data(**kwargs)
-        employee = Employee.objects.get_by_id(self.request.user.id)
+        employee = self.request.user.get_employee()
         assessments = employee.assessments_as_assessed.all()
         has_assessment = True
         if assessments is None or len(assessments) < 1:
@@ -107,8 +106,7 @@ class ShowMyDetailsView(LoginRequiredMixin, UserPassesTestMixin,TemplateView):
         return context
 
 
-class PunishmentRewardListView(LoginRequiredMixin,UserPassesTestMixin,ListView):
-
+class PunishmentRewardListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     template_name = "assessment/scale-list.html"
     model = PunishmentReward
 
@@ -116,8 +114,7 @@ class PunishmentRewardListView(LoginRequiredMixin,UserPassesTestMixin,ListView):
         return True
 
 
-class DoAssessmentView(LoginRequiredMixin,UserPassesTestMixin,CreateView):
-
+class DoAssessmentView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     template_name = "assessment/scale-list.html"
     model = Assessment
 
@@ -125,8 +122,7 @@ class DoAssessmentView(LoginRequiredMixin,UserPassesTestMixin,CreateView):
         return True
 
 
-class SetPunishmentRewardView(LoginRequiredMixin,UserPassesTestMixin,CreateView):
-
+class SetPunishmentRewardView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     template_name = "assessment/scale-list.html"
     model = PunishmentReward
 

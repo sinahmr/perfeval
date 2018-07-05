@@ -4,7 +4,7 @@ from django.shortcuts import reverse
 from django.views.generic.edit import CreateView, UpdateView
 
 from . import forms
-from .models import Employee
+from .models import User
 
 
 # TODO set permissions on every class
@@ -24,8 +24,8 @@ class LogoutView(LoginRequiredMixin, auth_views.LogoutView):
 
 
 class AddEmployeeView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
-    model = Employee
-    template_name_suffix = '_add'
+    model = User
+    template_name = 'authentication/employee_add.html'
     form_class = forms.AddEmployeeForm
 
     def test_func(self):
@@ -37,18 +37,13 @@ class AddEmployeeView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         return reverse('employee_list')
 
 
-class UpdateUsernameOrPasswordViewForEmployee(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    model = Employee
+class UpdateUsernameOrPasswordView(LoginRequiredMixin, UpdateView):
+    model = User
     form_class = forms.ChangeUsernameOrPasswordForm
     template_name_suffix = '_update'
 
-    def test_func(self):
-        if self.request.user.is_employee():
-            return True
-        return False
-
-    def get_object(self):
-        return self.request.user.employee
+    def get_object(self, queryset=None):
+        return self.request.user
 
     def get_success_url(self):
         return reverse('login')

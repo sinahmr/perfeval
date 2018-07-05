@@ -5,13 +5,14 @@ from . import models
 
 class AddEmployeeForm(forms.ModelForm):
     password_confirmation = forms.CharField(label='تکرار گذرواژه', widget=forms.PasswordInput())
+    employee_units = forms.ModelMultipleChoiceField(label='واحدها', queryset=models.Unit.objects.all())
 
     class Meta:
-        model = models.Employee
+        model = models.User
         fields = ['username', 'password', 'password_confirmation', 'first_name', 'last_name', 'father_name',
-                  'personnel_code', 'national_code', 'year_of_birth', 'mobile', 'units']
+                  'personnel_code', 'national_code', 'year_of_birth', 'mobile', 'employee_units']
         required_fields = ['username', 'password', 'password_confirmation', 'first_name', 'last_name', 'personnel_code',
-                           'national_code', 'mobile', 'units']
+                           'national_code', 'mobile', 'employee_units']
         widgets = {'password': forms.PasswordInput()}
         help_texts = {'username': None}
 
@@ -23,8 +24,14 @@ class AddEmployeeForm(forms.ModelForm):
             raise forms.ValidationError('عدم تطابق گذرواژه و تکرار آن')
 
     def save(self, commit=True):
+        employee = models.Employee.objects.create()
+        employee.set_units(list(self.cleaned_data['employee_units']))
+        employee.save()
+
         user = super(AddEmployeeForm, self).save(commit=False)
         user.set_password(self.cleaned_data['password'])
+        user.set_job(employee)
+
         if commit:
             user.save()
         return user
@@ -39,7 +46,7 @@ class ChangeUsernameOrPasswordForm(forms.ModelForm):
     password_confirmation = forms.CharField(label='تکرار گذرواژه', widget=forms.PasswordInput())
 
     class Meta:
-        model = models.Employee
+        model = models.User
         fields = ['username', 'password', 'password_confirmation']
         required_fields = ['username', 'password', 'password_confirmation']
         widgets = {'password': forms.PasswordInput()}

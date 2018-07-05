@@ -12,10 +12,36 @@ class Unit(models.Model):
         return self.name
 
 
+class Job(models.Model):
+    pass
+
+
+class Admin(Job):
+    pass
+
+
+class Employee(Job):
+    units = models.ManyToManyField(Unit, verbose_name='واحدها')
+
+    def get_assesseds(self):
+        assessments = self.assessments_as_assessor.all()
+        assesseds = []
+        for assessment in assessments:
+            assesseds.append(assessment.assessed)
+        return assesseds
+
+    def get_units(self):
+        return self.units
+
+    def set_units(self, units):
+        self.units.add(*units)
+
+
 class UserManager(DjangoUserManager):
     def create_superuser(self, username, email, password, **extra_fields):
         user = super(UserManager, self).create_superuser(username, email, password, **extra_fields)
-        Admin.objects.create(user_ptr=user)
+        admin = Admin.objects.create()
+        user.set_job(admin)
         user.save()
         return user
 
@@ -41,6 +67,8 @@ class User(AbstractUser):
     year_of_birth = models.IntegerField(verbose_name='سال تولد', null=True, blank=True)
     mobile = models.CharField(verbose_name='موبایل', max_length=15, null=True)
 
+    job = models.ForeignKey(Job, verbose_name='نقش', null=True, blank=True, on_delete=models.SET_NULL)
+
     objects = UserManager()
 
     def get_name(self):
@@ -52,14 +80,31 @@ class User(AbstractUser):
         return self.get_name()
 
     def is_admin(self):
-        if hasattr(self, 'admin'):
+        if not self.job:
+            return False
+        if hasattr(self.job, 'admin'):
             return True
         return False
 
     def is_employee(self):
-        if hasattr(self, 'employee'):
+        if not self.job:
+            return False
+        if hasattr(self.job, 'employee'):
             return True
         return False
+
+    def get_admin(self):
+        if self.is_admin():
+            return self.job.admin
+        return None
+
+    def get_employee(self):
+        if self.is_employee():
+            return self.job.employee
+        return None
+
+    def set_job(self, job):
+        self.job = job
 
     def change_username_and_password(self, new_username, new_password):  # TODO not used
         self.username = new_username
@@ -68,19 +113,3 @@ class User(AbstractUser):
             self.save()
         except IntegrityError:
             raise RepetitiousUsername()
-
-
-class Admin(User):
-    pass
-
-
-class Employee(User):
-    units = models.ManyToManyField(Unit, verbose_name='واحدها')
-
-    @property
-    def get_assesseds(self):
-        assessments = self.assessments_as_assessor.all()
-        assesseds = []
-        for assessment in assessments:
-            assesseds.append(assessment.assessed)
-        return assesseds
