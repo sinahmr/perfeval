@@ -65,3 +65,8 @@ class ChangeUsernameOrPasswordForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+
+class CreateAssessmentForm(forms.ModelForm):
+    Assessors = forms.CharField(label='ارزیاب', widget=models.User.objects.empolyees())
+    Scales = forms.MultipleChoiceField(label='معیار ها', queryset=models.User.objects.empolyees())

@@ -102,6 +102,12 @@ class ShowMyDetailsView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         context['has_assessment'] = has_assessment
         return context
 
+class CreateAssesment(LoginRequiredMixin, UserPassesTestMixin):
+
+    def test_func(self):
+        return True
+
+
 
 class PunishmentRewardListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     template_name = "assessment/scale-list.html"
