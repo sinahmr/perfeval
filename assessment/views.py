@@ -17,16 +17,13 @@ class AssessedsListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
     def get_queryset(self):
         assessor = self.request.user.get_employee()
-        return assessor.get_assesseds
+        return assessor.get_assesseds()
 
     def get_context_data(self, **kwargs):
-        # Call the base implementation first to get the context
         context = super(AssessedsListView, self).get_context_data(**kwargs)
-        # Create any data and add it to the context
-        not_found = False
+        context['not_found'] = False
         if self.get_queryset() is None or len(self.get_queryset()) < 1:
-            not_found = True
-        context['not_found'] = not_found
+            context['not_found'] = True
         return context
 
 

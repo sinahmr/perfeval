@@ -24,11 +24,7 @@ class Employee(Job):
     units = models.ManyToManyField(Unit, verbose_name='واحدها')
 
     def get_assesseds(self):
-        assessments = self.assessments_as_assessor.all()
-        assesseds = []
-        for assessment in assessments:
-            assesseds.append(assessment.assessed)
-        return assesseds
+        return self.assessments_as_assessor.all()  # TODO should not show all, should show not considered ones
 
     def get_units(self):
         return self.units
