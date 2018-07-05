@@ -7,8 +7,16 @@
     <div>
         <table>
             <tr>
+                <td>کد پرسنلی</td>
+                <td> {{ user.get_peronnel_code}}</td>
+            </tr>
+            <tr>
                 <td>نام و نام خوانوادگی</td>
-                <td> {{ employee.get_name }}</td>
+                <td> {{ user.get_name }}</td>
+            </tr>
+            <tr>
+                <td>واحد</td>
+                <td> {{ user.get_employee.get_units }}</td>
             </tr>
             <tr>
                 <td>نتیجه‌ی ارزیابی</td>

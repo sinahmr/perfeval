@@ -4,7 +4,7 @@ from django.views.generic import ListView, TemplateView, CreateView, FormView
 
 from assessment.models import Scale, PunishmentReward, Assessment
 from authentication.forms import CreateAssessmentForm
-from authentication.models import Employee
+from authentication.models import Employee, User , Unit
 from . import forms
 
 
@@ -55,7 +55,7 @@ class EmployeesListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
 
 class ShowEmployeeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
-    model = Employee
+    model = User
     template_name = 'assessment/show-employee.html'
 
     def test_func(self):
@@ -70,16 +70,16 @@ class ShowEmployeeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(ShowEmployeeView, self).get_context_data(**kwargs)
-        employee = Employee.objects.get_by_id(self.kwargs.get("pk"))
-        if employee:
-            assessments = employee.assessments_as_assessed.all()
+        user = User.objects.get_by_id(self.kwargs.get("pk"))
+        if user.is_employee():
+            assessments = user.get_employee().assessments_as_assessed.all()
         else:
             assessments = []
         has_assessment = True
         if assessments is None or len(assessments) < 1:
             has_assessment = False
         context['create_assessment_link'] = '/assessment/create/'+str(self.kwargs.get("pk"))+'/'
-        context['employee'] = employee
+        context['user'] = user
         context['assessments'] = assessments
         context['has_assessment'] = has_assessment
         return context

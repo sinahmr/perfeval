@@ -28,7 +28,7 @@ class Employee(Job):
         return self.assessments_as_assessor.all()  # TODO should not show all, should show not considered ones
 
     def get_units(self):
-        return self.units
+        return list(self.units.all())
 
     def set_units(self, units):
         self.units.add(*units)
@@ -119,3 +119,6 @@ class User(AbstractUser):
             self.save()
         except IntegrityError:
             raise RepetitiousUsername()
+
+    def get_personnel_code(self):
+        return self.personnel_code
