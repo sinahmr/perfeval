@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}تعیین ارزیاب و معیار های ارزیابی{% endblock %}
+
+{% block content %}
+    <form action="" method="post">
+        {% csrf_token %}
+        <table>
+            {{ form.as_table }}
+        </table>
+        <input type="submit" value="ثبت" />
+    </form>
+{% endblock %}

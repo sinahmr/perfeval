@@ -1,5 +1,7 @@
 from django import forms
 
+from assessment.models import Assessment
+from authentication.models import Employee
 from . import models
 
 
@@ -68,5 +70,21 @@ class ChangeUsernameOrPasswordForm(forms.ModelForm):
 
 
 class CreateAssessmentForm(forms.ModelForm):
-    Assessors = forms.CharField(label='ارزیاب', widget=models.User.objects.empolyees())
-    Scales = forms.MultipleChoiceField(label='معیار ها', queryset=models.User.objects.empolyees())
+    assessor = forms.ModelChoiceField(label='ارزیاب', queryset=models.User.objects.empolyees() )
+    scales = forms.ModelMultipleChoiceField(label='معیار ها', queryset=models.User.objects.empolyees())
+
+    class Meta:
+        model = Assessment
+        fields = ['assessor', 'scales',]
+
+
+    def save(self, commit=True,*args, **kwargs):
+        asssessment = super(CreateAssessmentForm, self).save(commit=False,*args,**kwargs)
+        request = None
+        if kwargs.has_key('request'):
+            request = kwargs.pop('request')
+        asssessment.set_season()
+        asssessment.set_assessed(Employee.objects.get(id=request.user.id))
+        if commit:
+            asssessment.save()
+        return asssessment

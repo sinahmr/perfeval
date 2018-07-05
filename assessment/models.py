@@ -8,6 +8,7 @@ class Season(models.Model):
     endDate = models.DateTimeField()
 
 
+
 class QualitativeCriterion(models.Model):
     choices = models.CharField(verbose_name='انتخاب ها', max_length=20, null=False, blank=False)
     interpretation = models.TextField()
@@ -36,6 +37,17 @@ class Assessment(models.Model):
                                related_query_name="assessments", null=False, blank=False)
 
     unique_together = ("assessor", "assessed", "season")
+
+
+    def set_season(self):
+        self.season = Season.objects.last()
+
+    def set_assessor(self, employee:Employee):
+        self.assessor = employee
+
+    def set_assessed(self, employee:Employee):
+        self.assessed = employee
+
 
 
 class ScaleAnswer(models.Model):
