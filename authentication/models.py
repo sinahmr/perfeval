@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser, UserManager as DjangoUserManager
 from django.db import IntegrityError
 from django.db import models
+from django.db.models import QuerySet
 
 from .exceptions import RepetitiousUsername
 
@@ -33,7 +34,16 @@ class Employee(Job):
         self.units.add(*units)
 
 
+class UserQuerySet(QuerySet):
+    def employees(self):
+        emps = Employee.objects.all()
+        return self.filter(job__in=emps)
+
+
 class UserManager(DjangoUserManager):
+    def get_queryset(self):
+        return UserQuerySet(self.model, using=self._db)
+
     def create_superuser(self, username, email, password, **extra_fields):
         user = super(UserManager, self).create_superuser(username, email, password, **extra_fields)
         admin = Admin.objects.create()
