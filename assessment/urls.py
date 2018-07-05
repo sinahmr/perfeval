@@ -10,4 +10,5 @@ urlpatterns = [
      path('eval/list/', views.AssessedsListView.as_view(), name='assessment_list'),
      path('create/<int:assessed>/', views.CreateAssesment.as_view(), name='create_assessment'),
      #path('eval/<int:pk>', views.AssessorsListView.as_view(), name='assessors'),
+     path('eval/<int:pk>/', views.DoAssessmentView.as_view(), name='assess'),
 ]
