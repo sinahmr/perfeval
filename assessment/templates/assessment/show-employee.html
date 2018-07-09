@@ -11,50 +11,38 @@
                 <td> {{ user.get_peronnel_code}}</td>
             </tr>
             <tr>
-                <td>نام و نام خوانوادگی</td>
+                <td>نام و نام خانوادگی</td>
                 <td> {{ user.get_name }}</td>
             </tr>
             <tr>
-                <td>واحد</td>
-                <td> {{ user.get_employee.get_units }}</td>
-            </tr>
-            <tr>
-                <td>نتیجه‌ی ارزیابی</td>
-                <td>
-                    {% if has_assessment %}
-                        <table class="table table-hover" style="border: 2px solid black; ">
-                          <thead class="thead-dark">
-                            <tr>
-                                <th scope="col">#</th>
-                                <th scope="col">نام کاربر</th>
-                                <th scope="col"> نام ارزیاب</th>
-                                <th scope="col"> نام معیار</th>
-                                <th scope="col"> معیار کیفی</th>
-                                <th scope="col"> معیار کمی</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                                {% for assessment in assessments %}
-                                    <tr>
-                                        <th scope="row">{{ forloop.counter }}</th>
-                                        <td>{{ assessment.assessor.get_name }}</td>
-                                        <td>{{ assessment.assessed.get_name }}</td>
-                                        {% for sc in assessment.scale_answers.all %}
-                                            <td>{{ sc.scale.title }}</td>
-                                            <td>{{ sc.qualitativeAnswer }}</td>
-                                            <td>{{ sc.quantitativeAnswer }}</td>
-                                        {% endfor %}
-
-                                    </tr>
-                                {% endfor %}
-                          </tbody>
-                        </table>
-                    {% else %}
-                        <span>ارزیابی نشده است</span>
-                    {% endif %}
-                </td>
+                <td>واحدها</td>
+                <td> {{ user.get_employee.get_units_as_string }}</td>
             </tr>
         </table>
-
+        <br/><br/>
+        <div>
+            {% if has_assessment %}
+                {% for assessment in assessments %}
+                    <div>
+                        <div>ارزیاب: <span>{{ assessment.assessed.get_user.get_name }}</span></div>
+                        <br/>
+                        {% for sc in assessment.scale_answers.all %}
+                            <div>معیار: <span>{{ sc.scale.title }}</span></div>
+                            <ul>
+                                {% if sc.qualitativeAnswer %}
+                                    <li>پاسخ کیفی: <span>{{ sc.qualitativeAnswer }}</span></li>
+                                {% endif %}
+                                {% if sc.quantitativeAnswer %}
+                                    <li>پاسخ کمی: <span>{{ sc.quantitativeAnswer }}</span></li>
+                                {% endif %}
+                            </ul>
+                        {% endfor %}
+                    </div>
+                    <br/>
+                {% endfor %}
+            {% else %}
+                <span>ارزیابی نشده است</span>
+            {% endif %}
+        </div>
     </div>
 {% endblock %}

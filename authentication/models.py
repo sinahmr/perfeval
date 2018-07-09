@@ -37,6 +37,10 @@ class Employee(Job):
     def get_units(self):
         return list(self.units.all())
 
+    def get_units_as_string(self):
+        names = [unit.name for unit in self.units.all()]
+        return '، '.join(names)
+
     def set_units(self, units):
         self.units.add(*units)
 
