@@ -6,22 +6,25 @@
     <h2>لیست ارزیابی‌های در دست انجام</h2>
 
     {% if not_found %}
-        <h3 style="color: crimson">کاربری جهت ارزیابی یافت نشد</h3>
+        <h3 style="color: crimson">ارزیابی‌ای در دست انجام ندارید</h3>
     {% else %}
         <table class="table table-hover" style="border: 2px solid black; ">
           <thead class="thead-dark">
             <tr>
               <th scope="col">#</th>
               <th scope="col">نام کاربر</th>
-              <th scope="col"> انجام ارزیابی</th>
+              <th scope="col">عنوان معیار</th>
+              <th scope="col"></th>
             </tr>
           </thead>
           <tbody>
-                {% for assessed in assesseds %}
+                {% for ans in answers%}
                     <tr>
                       <th scope="row">{{ forloop.counter }}</th>
-                      <td>{{ assessed.get_name }}</td>
-                      <td> <a style="color: #721c24;">انجام ارزیابی</a></td>
+                      <td>{{ ans.assessment.assessed.get_user.get_name }}</td>
+                      <td>{{ ans.scale.get_title }}</td>
+{#                      <td>{% if ans.carried_on %}<span style="color: green">بله</span>{% else %}<span style="color: red">خیر</span>{% endif %}</td>#}
+                      <td> <a href="{% url 'assess' pk=ans.id %}" style="color: #721c24;">انجام ارزیابی</a></td>
                     </tr>
                 {% endfor %}
           </tbody>

@@ -2,14 +2,14 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse
 from django.views.generic import ListView, TemplateView, CreateView, FormView, UpdateView
 
-from assessment.models import Scale, PunishmentReward, ScaleAnswer
+from assessment.models import Scale, PunishmentReward, ScaleAnswer, Assessment
 from authentication.forms import CreateAssessmentForm
-from authentication.models import Employee, User , Unit
+from authentication.models import Employee, User
 from . import forms
 
 
 class AssessedsListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
-    context_object_name = 'assesseds'
+    context_object_name = 'answers'
     template_name = 'assessment/assessment-list.html'
 
     def test_func(self):
@@ -19,7 +19,8 @@ class AssessedsListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
     def get_queryset(self):
         assessor = self.request.user.get_employee()
-        return assessor.get_assesseds()
+        answers = assessor.get_unresolved_answers()
+        return answers
 
     def get_context_data(self, **kwargs):
         context = super(AssessedsListView, self).get_context_data(**kwargs)
@@ -81,7 +82,7 @@ class ShowEmployeeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             pass
             # TODO SET has_assessment
             #   has_assessment = False
-        context['create_assessment_link'] = '/assessment/create/'+str(self.kwargs.get("pk"))+'/'
+        context['create_assessment_link'] = '/assessment/create/' + str(self.kwargs.get("pk")) + '/'
         context['user'] = user
         context['assessments'] = assessments
         context['has_assessment'] = has_assessment
@@ -105,16 +106,16 @@ class ShowMyDetailsView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         if assessments is None or len(assessments) < 1:
             has_assessment = False
         for assessment in assessments:
-             pass
-             # TODO SET has_assessment
-             #   has_assessment = False
+            pass
+            # TODO SET has_assessment
+            #   has_assessment = False
         context['employee'] = employee
         context['assessments'] = assessments
         context['has_assessment'] = has_assessment
         return context
 
 
-class CreateAssesment(LoginRequiredMixin, UserPassesTestMixin,CreateView):
+class CreateAssesment(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Assessment
     template_name = 'assessment/add-assessment.html'
     form_class = CreateAssessmentForm
@@ -126,14 +127,6 @@ class CreateAssesment(LoginRequiredMixin, UserPassesTestMixin,CreateView):
 
     def get_success_url(self):
         return reverse('show_my_details')
-
-
-
-
-
-
-
-
 
 
 class PunishmentRewardListView(LoginRequiredMixin, UserPassesTestMixin, ListView):

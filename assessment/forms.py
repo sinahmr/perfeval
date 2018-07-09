@@ -35,3 +35,10 @@ class ScaleAnswerForm(forms.ModelForm):
         qual = self.cleaned_data.get('quantitativeAnswer', '')
         if not quan and not qual:
             raise forms.ValidationError('پاسخ را وارد کنید')
+
+    def save(self, commit=True):
+        ans = super(ScaleAnswerForm, self).save(commit=False)
+        ans.carried_on = True
+        if commit:
+            ans.save()
+        return ans
