@@ -30,6 +30,15 @@ class Scale(models.Model):
     def get_title(self):
         return self.title
 
+    def __str__(self):
+        return self.get_title()
+
+    def set_qual_criterion(self, qual):
+        self.qualitativeCriterion = qual
+
+    def set_quan_criterion(self, quan):
+        self.quantitativeCriterion = quan
+
 
 class Assessment(models.Model):
     assessor = models.ForeignKey('authentication.Employee', on_delete=models.CASCADE,

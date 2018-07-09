@@ -2,7 +2,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse
 from django.views.generic import ListView, TemplateView, CreateView, FormView, UpdateView
 
-from assessment.models import Scale, PunishmentReward, ScaleAnswer, Assessment
+from assessment.models import Scale, PunishmentReward, ScaleAnswer, Assessment, QualitativeCriterion, QuantitativeCriterion
 from authentication.forms import CreateAssessmentForm
 from authentication.models import Employee, User
 from . import forms
@@ -30,12 +30,17 @@ class AssessedsListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         return context
 
 
-class AddScaleView(LoginRequiredMixin, UserPassesTestMixin, FormView):
+class AddScaleView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     template_name = "assessment/add-scale.html"
     form_class = forms.AddScaleForm
 
     def test_func(self):
-        return True
+        if self.request.user.is_admin():
+            return True
+        return False
+
+    def get_success_url(self):
+        return reverse('scale_list')
 
 
 class ScaleListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
