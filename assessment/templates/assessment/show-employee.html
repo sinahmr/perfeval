@@ -22,7 +22,7 @@
         <br/><br/>
         <div>
             {% if has_assessment %}
-                {% for assessment in assessments %}
+
                     <div>
                         <div>ارزیاب: <span>{{ assessment.assessed.get_user.get_name }}</span></div>
                         <br/>
@@ -39,7 +39,7 @@
                         {% endfor %}
                     </div>
                     <br/>
-                {% endfor %}
+
             {% else %}
                 <span>ارزیابی نشده است</span>
             {% endif %}

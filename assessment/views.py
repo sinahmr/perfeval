@@ -74,20 +74,26 @@ class ShowEmployeeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super(ShowEmployeeView, self).get_context_data(**kwargs)
         user = User.objects.get_by_id(self.kwargs.get("pk"))  # TODO handle None
-        if user.is_employee():
-            assessments = user.get_employee().assessments_as_assessed.all()
-        else:
-            assessments = []
+        not_found_user = False
         has_assessment = True
-        if assessments is None or len(assessments) < 1:
+        done_assessment = True
+        if user :
+            if user.is_employee():
+                assessment = user.get_employee().assessments_as_assessed.last()
+        else :
+            not_found_user = True
+
+        if assessment is None or len(assessment) < 1:
             has_assessment = False
-        for assessment in assessments:
-            pass
-            # TODO SET has_assessment
-            #   has_assessment = False
+            done_assessment = False
+        if has_assessment :
+            done_assessment = assessment.is_done()
+
+        context['done_assessment'] = done_assessment
         context['create_assessment_link'] = '/assessment/create/' + str(self.kwargs.get("pk")) + '/'
+        context['not_found_user'] = not_found_user
         context['user'] = user
-        context['assessments'] = assessments
+        context['assessment'] = assessment
         context['has_assessment'] = has_assessment
         return context
 
@@ -104,17 +110,19 @@ class ShowMyDetailsView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super(ShowMyDetailsView, self).get_context_data(**kwargs)
         employee = self.request.user.get_employee()
-        assessments = employee.assessments_as_assessed.all()
+        assessment = employee.assessments_as_assessed.last()
         has_assessment = True
-        if assessments is None or len(assessments) < 1:
+        done_assessment = True
+        if assessment is None or len(assessment) < 1:
             has_assessment = False
-        for assessment in assessments:
-            pass
-            # TODO SET has_assessment
-            #   has_assessment = False
-        context['employee'] = employee
-        context['assessments'] = assessments
+            done_assessment = False
+        if has_assessment :
+            done_assessment = assessment.is_done()
+
+        context['user'] = employee
+        context['assessment'] = assessment
         context['has_assessment'] = has_assessment
+        context['done_assessment'] = done_assessment
         return context
 
 

@@ -65,6 +65,13 @@ class Assessment(models.Model):
     def set_assessed(self, employee):
         self.assessed = employee
 
+    def is_done(self):
+        scale_answers = self.scale_answers.all()
+        for sc_a in scale_answers:
+            if sc_a.is_carried_on() is False:
+                return False
+        return True
+
 
 class ScaleAnswer(models.Model):
     carried_on = models.BooleanField(default=False)
@@ -73,6 +80,9 @@ class ScaleAnswer(models.Model):
     scale = models.ForeignKey('Scale', on_delete=models.CASCADE, null=False)
     qualitativeAnswer = models.CharField(max_length=100, null=True, blank=True)
     quantitativeAnswer = models.CharField(max_length=100, null=True, blank=True)
+
+    def is_carried_on(self):
+        return self.carried_on
 
 
 class PunishmentReward(models.Model):
