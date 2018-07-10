@@ -1,6 +1,6 @@
 from django import forms
 
-from assessment.models import Assessment, Scale
+from assessment.models import Assessment, Scale, ScaleAnswer
 from authentication.models import Employee
 from . import models
 
@@ -70,20 +70,28 @@ class ChangeUsernameOrPasswordForm(forms.ModelForm):
 
 
 class CreateAssessmentForm(forms.ModelForm):
-    assessor = forms.ModelChoiceField(label='ارزیاب', queryset=models.User.objects.all().employees())  # TODO error
+    a_assessor = forms.ModelChoiceField(label='ارزیاب', queryset=models.User.objects.all().employees())  # TODO error
     scales = forms.ModelMultipleChoiceField(label='معیار ها', queryset=Scale.objects.all())
 
     class Meta:
         model = Assessment
-        fields = ['assessor', 'scales',]
+        fields = ['a_assessor', 'scales',]
 
-    def save(self, commit=True,*args, **kwargs):
-        asssessment = super(CreateAssessmentForm, self).save(commit=False, *args,**kwargs)
-        request = None
-        if 'request' in kwargs.keys():
-            request = kwargs.pop('request')
-        asssessment.set_season()
-        asssessment.set_assessed(Employee.objects.get(id=request.user.id))  # TODO request is None
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user')
+        super(CreateAssessmentForm, self).__init__(*args, **kwargs)
+
+
+    def save(self, commit=True):
+        assessed = self.user.get_employee()
+        assessor = self.cleaned_data['a_assessor'].get_employee()
+        assessment = Assessment.objects.create(assessor=assessor,
+                                               assessed=assessed)
         if commit:
-            asssessment.save()
-        return asssessment
+            assessment.save()
+            for sc in self.cleaned_data['scales']:
+                sc_a = ScaleAnswer.objects.create(scale=sc,assessment=assessment)
+                sc_a.save()
+        return assessment
+
+

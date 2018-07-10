@@ -130,11 +130,21 @@ class CreateAssesment(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Assessment
     template_name = 'assessment/add-assessment.html'
     form_class = CreateAssessmentForm
+    user = None
+
+    def get_form_kwargs(self):
+        kwargs = super(CreateAssesment, self).get_form_kwargs()
+        self.user = User.objects.get_by_id(self.kwargs.get("pk"))
+        kwargs.update({'user': self.user})
+        return kwargs
+
 
     def test_func(self):
         if self.request.user.is_admin():
             return True
         return False
+
+    #def
 
     def get_success_url(self):
         return reverse('show_my_details')

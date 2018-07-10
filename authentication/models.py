@@ -26,7 +26,7 @@ class Employee(Job):
     units = models.ManyToManyField(Unit, verbose_name='واحدها')
 
     def get_assesseds(self):
-        return self.assessments_as_assessor.all()  # TODO should not show all, should show not considered ones
+        return self.assessments_as_assessor.filter()  # TODO should not show all, should show not considered ones
 
     def get_user(self):
         return User.objects.filter(job_id=self.pk).first()

@@ -56,6 +56,11 @@ class Assessment(models.Model):
 
     unique_together = ("assessor", "assessed", "season")
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.set_season()
+
+
     def set_season(self):
         self.season = Season.objects.last()
 
@@ -92,3 +97,5 @@ class PunishmentReward(models.Model):
                                related_query_name="punishment_rewards", null=False,
                                blank=False)
     employee = models.ForeignKey('authentication.Employee', on_delete=models.CASCADE)
+
+
