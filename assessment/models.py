@@ -49,8 +49,8 @@ class Assessment(models.Model):
                                  related_name="assessments_as_assessed",
                                  related_query_name="assessments_as_assessed",
                                  null=False, blank=False)
-    scales = models.ManyToManyField('Scale',
-                                    verbose_name='معیارها')  # TODO delete, create every ScaleAnswer object when assessment is created
+    #scales = models.ManyToManyField('Scale',
+                                   # verbose_name='معیارها')  # TODO delete, create every ScaleAnswer object when assessment is created
     season = models.ForeignKey('Season', on_delete=models.CASCADE, related_name="assessments",
                                related_query_name="assessments", null=False, blank=False)
 

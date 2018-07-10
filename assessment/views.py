@@ -83,7 +83,7 @@ class ShowEmployeeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         else :
             not_found_user = True
 
-        if assessment is None or len(assessment) < 1:
+        if assessment is None:
             has_assessment = False
             done_assessment = False
         if has_assessment :
@@ -109,17 +109,17 @@ class ShowMyDetailsView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(ShowMyDetailsView, self).get_context_data(**kwargs)
-        employee = self.request.user.get_employee()
-        assessment = employee.assessments_as_assessed.last()
+        user = self.request.user
+        assessment = user.get_employee().assessments_as_assessed.last()
         has_assessment = True
         done_assessment = True
-        if assessment is None or len(assessment) < 1:
+        if assessment is None:
             has_assessment = False
             done_assessment = False
         if has_assessment :
             done_assessment = assessment.is_done()
 
-        context['user'] = employee
+        context['user'] = user
         context['assessment'] = assessment
         context['has_assessment'] = has_assessment
         context['done_assessment'] = done_assessment

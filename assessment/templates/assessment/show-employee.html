@@ -8,7 +8,7 @@
         <table>
             <tr>
                 <td>کد پرسنلی</td>
-                <td> {{ user.get_peronnel_code}}</td>
+                <td> {{ user.get_personnel_code}}</td>
             </tr>
             <tr>
                 <td>نام و نام خانوادگی</td>
@@ -24,19 +24,27 @@
             {% if has_assessment %}
 
                     <div>
-                        <div>ارزیاب: <span>{{ assessment.assessed.get_user.get_name }}</span></div>
+                        <div>ارزیاب: <span>{{ assessment.assessor.get_user.get_name }}</span></div>
                         <br/>
-                        {% for sc in assessment.scale_answers.all %}
-                            <div>معیار: <span>{{ sc.scale.title }}</span></div>
-                            <ul>
-                                {% if sc.qualitativeAnswer %}
-                                    <li>پاسخ کیفی: <span>{{ sc.qualitativeAnswer }}</span></li>
-                                {% endif %}
-                                {% if sc.quantitativeAnswer %}
-                                    <li>پاسخ کمی: <span>{{ sc.quantitativeAnswer }}</span></li>
-                                {% endif %}
-                            </ul>
-                        {% endfor %}
+                        {% if done_assessment %}
+                            {% for sc in assessment.scale_answers.all %}
+                                 <div>معیار: <span>{{ sc.scale.title }}</span></div>
+                                <ul>
+                                    {% if sc.qualitativeAnswer %}
+                                        <li>پاسخ کیفی: <span>{{ sc.qualitativeAnswer }}</span></li>
+                                    {% endif %}
+                                     {% if sc.quantitativeAnswer %}
+                                          <li>پاسخ کمی: <span>{{ sc.quantitativeAnswer }}</span></li>
+                                     {% endif %}
+                                 </ul>
+                            {% endfor %}
+                        {% else %}
+                            <div>
+                                <ul>
+                                    ارزیابی در دست انجام است
+                                </ul>
+                            </div>
+                        {% endif %}
                     </div>
                     <br/>
 
