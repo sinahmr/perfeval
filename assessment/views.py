@@ -2,14 +2,14 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse
 from django.views.generic import ListView, TemplateView, CreateView, FormView, UpdateView
 
-from assessment.models import Scale, PunishmentReward, ScaleAnswer, Assessment
+from assessment.models import Scale, PunishmentReward, ScaleAnswer, Assessment, QualitativeCriterion, QuantitativeCriterion
 from authentication.forms import CreateAssessmentForm
-from authentication.models import Employee, User , Unit
+from authentication.models import Employee, User
 from . import forms
 
 
 class AssessedsListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
-    context_object_name = 'assesseds'
+    context_object_name = 'answers'
     template_name = 'assessment/assessment-list.html'
 
     def test_func(self):
@@ -19,7 +19,8 @@ class AssessedsListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
     def get_queryset(self):
         assessor = self.request.user.get_employee()
-        return assessor.get_assesseds()
+        answers = assessor.get_unresolved_answers()
+        return answers
 
     def get_context_data(self, **kwargs):
         context = super(AssessedsListView, self).get_context_data(**kwargs)
@@ -29,12 +30,17 @@ class AssessedsListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         return context
 
 
-class AddScaleView(LoginRequiredMixin, UserPassesTestMixin, FormView):
+class AddScaleView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     template_name = "assessment/add-scale.html"
     form_class = forms.AddScaleForm
 
     def test_func(self):
-        return True
+        if self.request.user.is_admin():
+            return True
+        return False
+
+    def get_success_url(self):
+        return reverse('scale_list')
 
 
 class ScaleListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
@@ -61,15 +67,13 @@ class ShowEmployeeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         if self.request.user.is_admin():
             return True
         if self.request.user.is_employee():
-            print("Hello")
             if self.request.user.id == self.kwargs.get("pk"):
-                print(self.kwargs.get("pk"))
                 return True
         return False
 
     def get_context_data(self, **kwargs):
         context = super(ShowEmployeeView, self).get_context_data(**kwargs)
-        user = User.objects.get_by_id(self.kwargs.get("pk"))
+        user = User.objects.get_by_id(self.kwargs.get("pk"))  # TODO handle None
         if user.is_employee():
             assessments = user.get_employee().assessments_as_assessed.all()
         else:
@@ -81,7 +85,7 @@ class ShowEmployeeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             pass
             # TODO SET has_assessment
             #   has_assessment = False
-        context['create_assessment_link'] = '/assessment/create/'+str(self.kwargs.get("pk"))+'/'
+        context['create_assessment_link'] = '/assessment/create/' + str(self.kwargs.get("pk")) + '/'
         context['user'] = user
         context['assessments'] = assessments
         context['has_assessment'] = has_assessment
@@ -105,16 +109,16 @@ class ShowMyDetailsView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         if assessments is None or len(assessments) < 1:
             has_assessment = False
         for assessment in assessments:
-             pass
-             # TODO SET has_assessment
-             #   has_assessment = False
+            pass
+            # TODO SET has_assessment
+            #   has_assessment = False
         context['employee'] = employee
         context['assessments'] = assessments
         context['has_assessment'] = has_assessment
         return context
 
 
-class CreateAssesment(LoginRequiredMixin, UserPassesTestMixin,CreateView):
+class CreateAssesment(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Assessment
     template_name = 'assessment/add-assessment.html'
     form_class = CreateAssessmentForm
@@ -126,14 +130,6 @@ class CreateAssesment(LoginRequiredMixin, UserPassesTestMixin,CreateView):
 
     def get_success_url(self):
         return reverse('show_my_details')
-
-
-
-
-
-
-
-
 
 
 class PunishmentRewardListView(LoginRequiredMixin, UserPassesTestMixin, ListView):

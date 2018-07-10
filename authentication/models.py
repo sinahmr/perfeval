@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models import QuerySet
 
 from .exceptions import RepetitiousUsername
+from assessment.models import ScaleAnswer
 
 
 class Unit(models.Model):
@@ -30,8 +31,15 @@ class Employee(Job):
     def get_user(self):
         return User.objects.filter(job_id=self.pk).first()
 
+    def get_unresolved_answers(self):
+        return ScaleAnswer.objects.filter(carried_on=False, assessment__assessor__user=self.get_user())
+
     def get_units(self):
         return list(self.units.all())
+
+    def get_units_as_string(self):
+        names = [unit.name for unit in self.units.all()]
+        return '، '.join(names)
 
     def set_units(self, units):
         self.units.add(*units)
@@ -76,7 +84,7 @@ class User(AbstractUser):
     year_of_birth = models.IntegerField(verbose_name='سال تولد', null=True, blank=True)
     mobile = models.CharField(verbose_name='موبایل', max_length=15, null=True)
 
-    job = models.ForeignKey(Job, verbose_name='نقش', null=True, blank=True, on_delete=models.SET_NULL)
+    job = models.ForeignKey('Job', verbose_name='نقش', null=True, blank=True, on_delete=models.SET_NULL)
 
     objects = UserManager()
 

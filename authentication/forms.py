@@ -70,13 +70,12 @@ class ChangeUsernameOrPasswordForm(forms.ModelForm):
 
 
 class CreateAssessmentForm(forms.ModelForm):
-    assessor = forms.ModelChoiceField(label='ارزیاب', queryset=models.User.objects.all().employees())
+    assessor = forms.ModelChoiceField(label='ارزیاب', queryset=models.User.objects.all().employees())  # TODO error
     scales = forms.ModelMultipleChoiceField(label='معیار ها', queryset=Scale.objects.all())
 
     class Meta:
         model = Assessment
         fields = ['assessor', 'scales',]
-
 
     def save(self, commit=True,*args, **kwargs):
         asssessment = super(CreateAssessmentForm, self).save(commit=False, *args,**kwargs)
@@ -84,7 +83,7 @@ class CreateAssessmentForm(forms.ModelForm):
         if 'request' in kwargs.keys():
             request = kwargs.pop('request')
         asssessment.set_season()
-        asssessment.set_assessed(Employee.objects.get(id=request.user.id))
+        asssessment.set_assessed(Employee.objects.get(id=request.user.id))  # TODO request is None
         if commit:
             asssessment.save()
         return asssessment
