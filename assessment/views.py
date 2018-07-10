@@ -2,7 +2,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse
 from django.views.generic import ListView, TemplateView, CreateView, FormView, UpdateView
 
-from assessment.models import Scale, PunishmentReward, ScaleAnswer
+from assessment.models import Scale, PunishmentReward, ScaleAnswer, Assessment
 from authentication.forms import CreateAssessmentForm
 from authentication.models import Employee, User , Unit
 from . import forms
