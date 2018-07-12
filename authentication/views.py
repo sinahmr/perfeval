@@ -8,16 +8,12 @@ from . import forms
 from .models import User, Unit
 
 
-# TODO set permissions on every class
 class LoginView(auth_views.LoginView):
     template_name = 'authentication/login.html'
     redirect_authenticated_user = True
 
     def get_success_url(self):
-        if self.request.user.is_employee():
-            return reverse('show_my_details')
-        else:
-            return reverse('employee_list')
+        return reverse('dashboard')
 
 
 class LogoutView(LoginRequiredMixin, auth_views.LogoutView):

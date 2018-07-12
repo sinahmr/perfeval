@@ -80,13 +80,7 @@ class UserManager(DjangoUserManager):
         user.save()
         return user
 
-    def get_by_username(self, username):  # TODO not used
-        try:
-            return self.get(username=username)
-        except User.DoesNotExist:
-            return None
-
-    def get_by_id(self, user_id):  # TODO not used
+    def get_by_id(self, user_id):
         try:
             return self.get(pk=user_id)
         except User.DoesNotExist:

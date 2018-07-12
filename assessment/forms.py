@@ -1,6 +1,7 @@
 from django import forms
 
-from assessment.models import Assessment, Scale, ScaleAnswer, QuantitativeCriterion, QualitativeCriterion, Season
+from assessment.models import Assessment, Scale, ScaleAnswer, QuantitativeCriterion, QualitativeCriterion, Season, \
+    PunishmentReward
 from authentication.models import User
 
 
@@ -110,9 +111,15 @@ class CreateAssessmentForm(forms.ModelForm):
         if commit:
             assessment.save()
             for sc in self.cleaned_data['scales']:
-                sc_a = ScaleAnswer.objects.create(scale=sc, assessment=assessment)
-                sc_a.save()
+                ScaleAnswer.objects.create(scale=sc, assessment=assessment)
+            PunishmentReward.objects.create(assessment=assessment)
         return assessment
+
+
+class PunishmentRewardForm(forms.ModelForm):
+    class Meta:
+        model = PunishmentReward
+        fields = ['type', 'method']
 
 
 class AddSeasonForm(forms.ModelForm):
