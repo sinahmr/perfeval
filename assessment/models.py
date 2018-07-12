@@ -1,6 +1,8 @@
 from django.contrib.auth.models import UserManager as DjangoUserManager
 from django.db import models
 
+from authentication.models import Employee
+
 
 class SeasonManager(DjangoUserManager):
     def get_current_season(self):
@@ -66,13 +68,22 @@ class Assessment(models.Model):
         self.set_season()
 
     def set_season(self):
-        self.season = Season.objects.last()
+        self.season = Season.objects.get_current_season()
+
+    def get_season(self):
+        return self.season
 
     def set_assessor(self, employee):
         self.assessor = employee
 
-    def set_assessed(self, employee):
+    def set_assessed(self, employee) :
         self.assessed = employee
+
+    def get_assessor(self):
+        return self.assessor
+
+    def get_assessed(self):
+        return self.assessed
 
     def is_done(self):
         scale_answers = self.scale_answers.all()

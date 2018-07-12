@@ -2,9 +2,10 @@ from django.contrib.auth.models import AbstractUser, UserManager as DjangoUserMa
 from django.db import IntegrityError
 from django.db import models
 from django.db.models import QuerySet
+from polymorphic.models import PolymorphicModel
 
 from .exceptions import RepetitiousUsername
-from assessment.models import ScaleAnswer
+from assessment.models import ScaleAnswer, Season
 
 
 class Unit(models.Model):
@@ -14,7 +15,7 @@ class Unit(models.Model):
         return self.name
 
 
-class Job(models.Model):
+class Job(PolymorphicModel):
     pass
 
 
@@ -43,6 +44,23 @@ class Employee(Job):
 
     def set_units(self, units):
         self.units.add(*units)
+
+    def get_current_assessment(self):
+        return self.assessments_as_assessed.filter(season=Season.objects.get_current_season()).first()
+
+    def has_assessment(self):
+        assessment = self.get_current_assessment()
+        if assessment:
+            return True
+        return False
+
+    def assessment_done(self):
+        assessment = self.assessments_as_assessed.filter(season=Season.objects.get_current_season()).first()
+        if assessment:
+            return assessment.is_done()
+        return False
+
+
 
 
 class UserQuerySet(QuerySet):
@@ -110,12 +128,12 @@ class User(AbstractUser):
             return True
         return False
 
-    def get_admin(self):
+    def get_admin(self)-> Admin:
         if self.is_admin():
             return self.job.admin
         return None
 
-    def get_employee(self):
+    def get_employee(self)-> Employee:
         if self.is_employee():
             return self.job.employee
         return None
@@ -133,3 +151,5 @@ class User(AbstractUser):
 
     def get_personnel_code(self):
         return self.personnel_code
+
+

@@ -16,16 +16,16 @@
             </tr>
             <tr>
                 <td>واحدها</td>
-                <td> {{ user.get_employee.get_units_as_string }}</td>
+                <td> {{ employee.get_units_as_string }}</td>
             </tr>
         </table>
         <br/><br/>
         <div>
-            {% if has_assessment %}
+            {% if employee.has_assessment %}
                 <div>
-                    <div>ارزیاب: <span>{{ assessment.assessor.get_user.get_name }}</span></div>
+                    <div>ارزیاب: <span>{{ assessment.get_assessor.get_user.get_name }}</span></div>
                     <br/>
-                    {% if done_assessment %}
+                    {% if employee.assessment_done %}
                         {% for sc in assessment.scale_answers.all %}
                              <div>معیار: <span>{{ sc.scale.title }}</span></div>
                             <ul>

@@ -46,26 +46,14 @@ class AddScaleView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 class EmployeesListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     template_name = "assessment/employee-list.html"
     model = Employee
+    context_object_name = "employees"
 
     def test_func(self):
         if self.request.user.is_admin():
             return True
         return False
 
-    def get_context_data(self, **kwargs):
-        context = super(EmployeesListView, self).get_context_data(**kwargs)
-        employees = Employee.objects.all()
-        for emp in employees:
-            emp.has_assessor = False
-            emp.assessment_done = False
-            assessment = emp.assessments_as_assessed.filter(season=Season.objects.get_current_season()).first()
-            if assessment:
-                emp.has_assessor = True
-                if assessment.is_done():
-                    emp.assessment_done = True
 
-        context['employees'] = employees
-        return context
 
 
 class ShowEmployeeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
@@ -84,26 +72,21 @@ class ShowEmployeeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         context = super(ShowEmployeeView, self).get_context_data(**kwargs)
         user = User.objects.get_by_id(self.kwargs.get("pk"))  # TODO handle None
         not_found_user = False
-        has_assessment = True
-        done_assessment = True
+        assessment = None
+        employee = None
         if user:
-            if user.is_employee():
-                assessment = user.get_employee().assessments_as_assessed.last()
+            employee = user.get_employee()
+            if employee:
+                assessment = employee.get_current_assessment()
         else:
             not_found_user = True
 
-        if assessment is None:
-            has_assessment = False
-            done_assessment = False
-        if has_assessment:
-            done_assessment = assessment.is_done()
 
-        context['done_assessment'] = done_assessment
         context['not_found_user'] = not_found_user
         context['user'] = user
+        context['employee'] = employee
         context['viewer'] = self.request.user
         context['assessment'] = assessment
-        context['has_assessment'] = has_assessment
         return context
 
 

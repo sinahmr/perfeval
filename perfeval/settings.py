@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+
     'authentication.apps.AuthenticationConfig',
     'assessment.apps.AssessmentConfig',
     'django.contrib.admin',
@@ -40,6 +41,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
+INSTALLED_APPS += (
+    'polymorphic',
+)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
