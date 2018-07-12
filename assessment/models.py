@@ -2,8 +2,7 @@ from django.db import models
 
 
 class Season(models.Model):
-    startDate = models.DateTimeField()
-    endDate = models.DateTimeField()
+    title = models.CharField(verbose_name='عنوان', max_length=100, null=False, blank=False)
 
 
 class QualitativeCriterion(models.Model):

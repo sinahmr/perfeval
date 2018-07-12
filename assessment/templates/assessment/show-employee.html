@@ -22,36 +22,36 @@
         <br/><br/>
         <div>
             {% if has_assessment %}
-
-                    <div>
-                        <div>ارزیاب: <span>{{ assessment.assessor.get_user.get_name }}</span></div>
-                        <br/>
-                        {% if done_assessment %}
-                            {% for sc in assessment.scale_answers.all %}
-                                 <div>معیار: <span>{{ sc.scale.title }}</span></div>
-                                <ul>
-                                    {% if sc.qualitativeAnswer %}
-                                        <li>پاسخ کیفی: <span>{{ sc.qualitativeAnswer }}</span></li>
-                                    {% endif %}
-                                     {% if sc.quantitativeAnswer %}
-                                          <li>پاسخ کمی: <span>{{ sc.quantitativeAnswer }}</span></li>
-                                     {% endif %}
-                                 </ul>
-                            {% endfor %}
-                        {% else %}
-                            <div>
-                                <ul>
-                                    ارزیابی در دست انجام است
-                                </ul>
-                            </div>
-                        {% endif %}
-                    </div>
+                <div>
+                    <div>ارزیاب: <span>{{ assessment.assessor.get_user.get_name }}</span></div>
                     <br/>
-
+                    {% if done_assessment %}
+                        {% for sc in assessment.scale_answers.all %}
+                             <div>معیار: <span>{{ sc.scale.title }}</span></div>
+                            <ul>
+                                {% if sc.qualitativeAnswer %}
+                                    <li>پاسخ کیفی: <span>{{ sc.qualitativeAnswer }}</span></li>
+                                {% endif %}
+                                 {% if sc.quantitativeAnswer %}
+                                      <li>پاسخ کمی: <span>{{ sc.quantitativeAnswer }}</span></li>
+                                 {% endif %}
+                             </ul>
+                        {% endfor %}
+                    {% else %}
+                        <div>
+                            <ul>
+                                ارزیابی در دست انجام است
+                            </ul>
+                        </div>
+                    {% endif %}
+                </div>
+                <br/>
             {% else %}
                 <span>ارزیابی نشده است</span>
                 <br>
-                <br>
+            {% endif %}
+            <br>
+            {% if viewer.is_admin %}
                 <div><a href="{% url 'create_assessment' pk=user.id %}" style="color: #721c24;">تعیین ارزیاب و معیار ارزیابی</a></div>
             {% endif %}
         </div>

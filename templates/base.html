@@ -22,19 +22,6 @@
     </style>
 </head>
 <body dir="rtl">
-{#{% if messages %}#}
-{#    <div>#}
-{#        <div>#}
-{#            {% for message in messages %}#}
-{#                <div style="color: {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}red{% else %}green{% endif %};">#}
-{#                    <p>{{ message }}#}
-{#                    </p>#}
-{#                </div>#}
-{#            {% endfor %}#}
-{#        </div>#}
-{#    </div>#}
-{#{% endif %}#}
-
 {% block content %}{% endblock %}
 </body>
 </html>
