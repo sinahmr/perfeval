@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}داشبورد{% endblock %}
+
+{% block content %}
+    <div>
+        {% if is_admin %}
+            <a href="{% url 'add_unit' %}">افزودن واحد جدید</a>
+            <br/>
+            <a href="{% url 'add_employee' %}">افزودن کارمند جدید</a>
+            <br/>
+            <a href="{% url 'add_season' %}">افزودن فصل جدید و پایان فصل جاری</a>
+            <br/>
+            <a href="{% url 'add_scale' %}">افزودن معیار جدید</a>
+            <br/>
+            <a href="{% url 'scale_list' %}">لیست معیارها</a>
+            <br/>
+            <a href="{% url 'employee_list' %}">لیست کارمندان</a>
+{#            <a href="{% url '' %}"></a>#}
+            <br/>
+            <a href="{% url 'logout' %}">خروج از سیستم</a>
+        {% endif %}
+        {% if is_employee %}
+            <a href="{% url 'user_update' %}">تغییر نام کاربری یا گذرواژه</a>
+            <br/>
+            <a href="{% url 'show_my_details' %}">مشخصات و ارزیابی من</a>
+            <br/>
+            <a href="{% url 'assessment_list' %}">لیست ارزیابی‌های در دست انجام</a>
+            <br/>
+            <a href="{% url 'logout' %}">خروج از سیستم</a>
+        {% endif %}
+    </div>
+{% endblock %}

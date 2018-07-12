@@ -1,6 +1,7 @@
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import reverse
+from django.views.generic import TemplateView
 from django.views.generic.edit import CreateView, UpdateView
 
 from . import forms
@@ -25,7 +26,7 @@ class LogoutView(LoginRequiredMixin, auth_views.LogoutView):
 
 class AddEmployeeView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = User
-    template_name = 'authentication/employee_add.html'
+    template_name = 'authentication/add-employee.html'
     form_class = forms.AddEmployeeForm
 
     def test_func(self):
@@ -61,3 +62,14 @@ class AddUnitView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 
     def get_success_url(self):
         return reverse('dashboard')
+
+
+class Dashboard(LoginRequiredMixin, TemplateView):
+    template_name = 'authentication/dashboard.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(Dashboard, self).get_context_data(**kwargs)
+        context['user'] = self.request.user
+        context['is_admin'] = self.request.user.is_admin()
+        context['is_employee'] = self.request.user.is_employee()
+        return context

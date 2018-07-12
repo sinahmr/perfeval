@@ -199,7 +199,3 @@ class AddSeasonView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 
     def get_success_url(self):
         return reverse('dashboard')
-
-
-class Dashboard(LoginRequiredMixin, TemplateView):
-    pass
