@@ -3,6 +3,7 @@
 {% block title %}داشبورد{% endblock %}
 
 {% block content %}
+    <div>سلام {{ user.get_name }}!</div>
     <div>
         {% if is_admin %}
             <a href="{% url 'add_unit' %}">افزودن واحد جدید</a>
@@ -16,18 +17,16 @@
             <a href="{% url 'scale_list' %}">لیست معیارها</a>
             <br/>
             <a href="{% url 'employee_list' %}">لیست کارمندان</a>
-{#            <a href="{% url '' %}"></a>#}
             <br/>
-            <a href="{% url 'logout' %}">خروج از سیستم</a>
         {% endif %}
         {% if is_employee %}
-            <a href="{% url 'user_update' %}">تغییر نام کاربری یا گذرواژه</a>
-            <br/>
             <a href="{% url 'show_my_details' %}">مشخصات و ارزیابی من</a>
             <br/>
             <a href="{% url 'assessment_list' %}">لیست ارزیابی‌های در دست انجام</a>
             <br/>
-            <a href="{% url 'logout' %}">خروج از سیستم</a>
         {% endif %}
+        <a href="{% url 'user_update' %}">تغییر نام کاربری یا گذرواژه</a>
+        <br/>
+        <a href="{% url 'logout' %}">خروج از سیستم</a>
     </div>
 {% endblock %}
