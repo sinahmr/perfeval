@@ -71,8 +71,8 @@ class ScaleAnswerForm(forms.ModelForm):
             del self.fields['quantitativeAnswer']
 
     def clean(self):
-        quan = self.cleaned_data.get('qualitativeAnswer', '')
-        qual = self.cleaned_data.get('quantitativeAnswer', '')
+        quan = self.cleaned_data.get('quantitativeAnswer', '')
+        qual = self.cleaned_data.get('qualitativeAnswer', '')
         if self.instance.scale.qualitativeCriterion and not qual:
             raise forms.ValidationError('پاسخ کیفی را وارد کنید')
         if self.instance.scale.quantitativeCriterion and not quan:

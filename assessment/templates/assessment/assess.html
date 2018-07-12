@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-
 {% block title %}ارزیابی کارمند{% endblock %}
 
 {% block content %}
@@ -46,10 +45,18 @@
                         <td>{{ scale.quantitativeCriterion.interpretation }}</td>
                     </tr>
                 {% endif %}
-                {% if scale.qualititativeCriterion %}
+                {% if scale.qualitativeCriterion %}
                     <tr>
                         <td>گزینه‌های کیفی</td>
-                        <td>{{ scale.qualitativeCriterion.choices }}</td>
+                            <td>
+                                {% for item in scale.qualitativeCriterion.get_choices_list %}
+                                    <span>{{ item }}</span>
+                                    {% if not forloop.last %}
+                                        <span>&nbsp;&nbsp;|&nbsp;&nbsp;</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+
                     </tr>
                     <tr>
                         <td>تفسیر کیفی</td>

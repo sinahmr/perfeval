@@ -49,11 +49,12 @@
             {% else %}
                 <span>ارزیابی نشده است</span>
                 <br>
-            {% endif %}
-            <br>
+                 <br>
             {% if viewer.is_admin %}
                 <div><a href="{% url 'create_assessment' pk=user.id %}" style="color: #721c24;">تعیین ارزیاب و معیار ارزیابی</a></div>
             {% endif %}
+            {% endif %}
+
         </div>
     </div>
 {% endblock %}
