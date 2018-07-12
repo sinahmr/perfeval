@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.views.generic import ListView, TemplateView, CreateView, FormView, UpdateView
 
 from assessment.models import Scale, PunishmentReward, ScaleAnswer, Assessment, QualitativeCriterion, QuantitativeCriterion
-from authentication.forms import CreateAssessmentForm
+from assessment.forms import CreateAssessmentForm
 from authentication.models import Employee, User
 from . import forms
 
@@ -93,6 +93,7 @@ class ShowEmployeeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         context['create_assessment_link'] = '/assessment/create/' + str(self.kwargs.get("pk")) + '/'
         context['not_found_user'] = not_found_user
         context['user'] = user
+        context['viewer'] = self.request.user
         context['assessment'] = assessment
         context['has_assessment'] = has_assessment
         return context

@@ -1,16 +1,14 @@
 from django import forms
 
-from assessment.models import Assessment, Scale, ScaleAnswer
-from authentication.models import Employee
-from . import models
+from authentication.models import User, Unit
 
 
 class AddEmployeeForm(forms.ModelForm):
     password_confirmation = forms.CharField(label='تکرار گذرواژه', widget=forms.PasswordInput())
-    employee_units = forms.ModelMultipleChoiceField(label='واحدها', queryset=models.Unit.objects.all())
+    employee_units = forms.ModelMultipleChoiceField(label='واحدها', queryset=Unit.objects.all())
 
     class Meta:
-        model = models.User
+        model = User
         fields = ['username', 'password', 'password_confirmation', 'first_name', 'last_name', 'father_name',
                   'personnel_code', 'national_code', 'year_of_birth', 'mobile', 'employee_units']
         required_fields = ['username', 'password', 'password_confirmation', 'first_name', 'last_name', 'personnel_code',
@@ -67,31 +65,3 @@ class ChangeUsernameOrPasswordForm(forms.ModelForm):
         if commit:
             user.save()
         return user
-
-
-class CreateAssessmentForm(forms.ModelForm):
-    a_assessor = forms.ModelChoiceField(label='ارزیاب', queryset=models.User.objects.all().employees())  # TODO error
-    scales = forms.ModelMultipleChoiceField(label='معیار ها', queryset=Scale.objects.all())
-
-    class Meta:
-        model = Assessment
-        fields = ['a_assessor', 'scales',]
-
-    def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user')
-        super(CreateAssessmentForm, self).__init__(*args, **kwargs)
-
-
-    def save(self, commit=True):
-        assessed = self.user.get_employee()
-        assessor = self.cleaned_data['a_assessor'].get_employee()
-        assessment = Assessment.objects.create(assessor=assessor,
-                                               assessed=assessed)
-        if commit:
-            assessment.save()
-            for sc in self.cleaned_data['scales']:
-                sc_a = ScaleAnswer.objects.create(scale=sc,assessment=assessment)
-                sc_a.save()
-        return assessment
-
-
