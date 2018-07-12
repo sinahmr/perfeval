@@ -41,9 +41,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
-INSTALLED_APPS += (
-    'polymorphic',
-)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

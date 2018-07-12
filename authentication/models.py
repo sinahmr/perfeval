@@ -1,10 +1,7 @@
 from django.contrib.auth.models import AbstractUser, UserManager as DjangoUserManager
-from django.db import IntegrityError
 from django.db import models
 from django.db.models import QuerySet
-from polymorphic.models import PolymorphicModel
 
-from .exceptions import RepetitiousUsername
 from assessment.models import ScaleAnswer, Season
 
 
@@ -15,7 +12,7 @@ class Unit(models.Model):
         return self.name
 
 
-class Job(PolymorphicModel):
+class Job(models.Model):
     pass
 
 
@@ -59,8 +56,6 @@ class Employee(Job):
         if assessment:
             return assessment.is_done()
         return False
-
-
 
 
 class UserQuerySet(QuerySet):
@@ -134,14 +129,6 @@ class User(AbstractUser):
 
     def set_job(self, job):
         self.job = job
-
-    def change_username_and_password(self, new_username, new_password):  # TODO not used
-        self.username = new_username
-        self.set_password(new_password)
-        try:
-            self.save()
-        except IntegrityError:
-            raise RepetitiousUsername()
 
     def get_personnel_code(self):
         return self.personnel_code

@@ -1,8 +1,6 @@
 from django.contrib.auth.models import UserManager as DjangoUserManager
 from django.db import models
 
-from authentication.models import Employee
-
 
 class SeasonManager(DjangoUserManager):
     def get_current_season(self):
