@@ -35,21 +35,21 @@
                     <td>توضیحات معیار</td>
                     <td>{{ scale.get_description }}</td>
                 </tr>
-                {% if scale.get_quantitativeCriterion %}
+                {% if scale.get_quantitative_criterion %}
                     <tr>
                         <td>فرمول کمی</td>
-                        <td>{{ scale.get_quantitativeCriterion.get_formula }}</td>
+                        <td>{{ scale.get_quantitative_criterion.get_formula }}</td>
                     </tr>
                     <tr>
                         <td>تفسیر کمی</td>
-                        <td>{{ scale.get_quantitativeCriterion.get_interpretation }}</td>
+                        <td>{{ scale.get_quantitative_criterion.get_interpretation }}</td>
                     </tr>
                 {% endif %}
-                {% if scale.get_qualitativeCriterion %}
+                {% if scale.get_qualitative_criterion %}
                     <tr>
                         <td>گزینه‌های کیفی</td>
                             <td>
-                                {% for item in scale.get_qualitativeCriterion.get_choices_list %}
+                                {% for item in scale.get_qualitative_criterion.get_choices_list %}
                                     <span>{{ item }}</span>
                                     {% if not forloop.last %}
                                         <span>&nbsp;&nbsp;|&nbsp;&nbsp;</span>
@@ -60,7 +60,7 @@
                     </tr>
                     <tr>
                         <td>تفسیر کیفی</td>
-                        <td>{{ scale.get_qualitativeCriterion.get_interpretation }}</td>
+                        <td>{{ scale.get_qualitative_criterion.get_interpretation }}</td>
                     </tr>
                 {% endif %}
             </table>

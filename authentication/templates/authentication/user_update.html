@@ -3,7 +3,7 @@
 {% block title %}تغییر نام کاربری یا گذرواژه{% endblock %}
 
 {% block content %}
-    <div>نام کاربری فعلی شما: {{ request.user.username }}</div>
+    <div>نام کاربری فعلی شما: {{ request.user.get_username }}</div>
     <br/>
     <div>
         <span>برای تغییر هر کدام از موارد نام کاربری یا گذرواژه بایستی اطلاعات زیر را به طور کامل وارد نمایید.</span>

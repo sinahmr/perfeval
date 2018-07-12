@@ -29,11 +29,11 @@
                         {% for sc in assessment.get_scale_answers %}
                              <div>معیار: <span>{{ sc.get_scale.get_title }}</span></div>
                             <ul>
-                                {% if sc.get_qualitativeAnswer %}
-                                    <li>پاسخ کیفی: <span>{{ sc.get_qualitativeAnswer }}</span></li>
+                                {% if sc.get_qualitative_answer %}
+                                    <li>پاسخ کیفی: <span>{{ sc.get_qualitative_answer }}</span></li>
                                 {% endif %}
-                                 {% if sc.quantitativeAnswer %}
-                                      <li>پاسخ کمی: <span>{{ sc.get_quantitativeAnswer }}</span></li>
+                                 {% if sc.quantitative_answer %}
+                                      <li>پاسخ کمی: <span>{{ sc.get_quantitative_answer }}</span></li>
                                  {% endif %}
                              </ul>
                         {% endfor %}

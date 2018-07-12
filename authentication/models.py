@@ -3,7 +3,7 @@ from django.db import IntegrityError
 from django.db import models
 from django.db.models import QuerySet
 
-from .exceptions import RepetitiousUsername
+
 from assessment.models import ScaleAnswer, Season
 
 
@@ -28,8 +28,6 @@ class Admin(Job):
 
 class Employee(Job):
     units = models.ManyToManyField(Unit, verbose_name='واحدها')
-
-
 
     def get_assesseds(self):
         return self.assessments_as_assessor.filter()  # TODO should not show all, should show not considered ones
@@ -105,6 +103,9 @@ class User(AbstractUser):
 
     objects = UserManager()
 
+    def get_username(self):
+        return self.username
+
     def get_first_name(self):
         return self.first_name
 
@@ -152,13 +153,13 @@ class User(AbstractUser):
     def set_job(self, job):
         self.job = job
 
-    def change_username_and_password(self, new_username, new_password):  # TODO not used
-        self.username = new_username
-        self.set_password(new_password)
-        try:
-            self.save()
-        except IntegrityError:
-            raise RepetitiousUsername()
+    # def change_username_and_password(self, new_username, new_password):  # TODO not used
+    #     self.username = new_username
+    #     self.set_password(new_password)
+    #     try:
+    #         self.save()
+    #     except IntegrityError:
+    #         raise RepetitiousUsername()
 
     def get_personnel_code(self):
         return self.personnel_code
