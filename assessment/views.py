@@ -90,7 +90,6 @@ class ShowEmployeeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             done_assessment = assessment.is_done()
 
         context['done_assessment'] = done_assessment
-        context['create_assessment_link'] = '/assessment/create/' + str(self.kwargs.get("pk")) + '/'
         context['not_found_user'] = not_found_user
         context['user'] = user
         context['assessment'] = assessment
