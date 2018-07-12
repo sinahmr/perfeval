@@ -46,7 +46,7 @@ class ChangeUsernameOrPasswordForm(forms.ModelForm):
     password_confirmation = forms.CharField(label='تکرار گذرواژه', widget=forms.PasswordInput())
 
     class Meta:
-        model = models.User
+        model = User
         fields = ['username', 'password', 'password_confirmation']
         required_fields = ['username', 'password', 'password_confirmation']
         widgets = {'password': forms.PasswordInput()}
