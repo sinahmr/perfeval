@@ -1,8 +1,16 @@
+from django.contrib.auth.models import UserManager as DjangoUserManager
 from django.db import models
+
+
+class SeasonManager(DjangoUserManager):
+    def get_current_season(self):
+        return self.last()
 
 
 class Season(models.Model):
     title = models.CharField(verbose_name='عنوان', max_length=100, null=False, blank=False)
+
+    objects = SeasonManager()
 
 
 class QualitativeCriterion(models.Model):
@@ -48,17 +56,14 @@ class Assessment(models.Model):
                                  related_name="assessments_as_assessed",
                                  related_query_name="assessments_as_assessed",
                                  null=False, blank=False)
-    #scales = models.ManyToManyField('Scale',
-                                   # verbose_name='معیارها')  # TODO delete, create every ScaleAnswer object when assessment is created
     season = models.ForeignKey('Season', on_delete=models.CASCADE, related_name="assessments",
                                related_query_name="assessments", null=False, blank=False)
 
-    unique_together = ("assessor", "assessed", "season")
+    unique_together = ("assessed", "season")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.set_season()
-
 
     def set_season(self):
         self.season = Season.objects.last()
@@ -78,19 +83,19 @@ class Assessment(models.Model):
 
 
 class ScaleAnswer(models.Model):
-    carried_on = models.BooleanField(default=False)
+    carried_on = models.BooleanField(verbose_name='انجام‌شده', default=False)
     assessment = models.ForeignKey('Assessment', on_delete=models.CASCADE, related_name="scale_answers",
                                    related_query_name="scale_answers")
     scale = models.ForeignKey('Scale', on_delete=models.CASCADE, null=False)
-    qualitativeAnswer = models.CharField(max_length=100, null=True, blank=True)
-    quantitativeAnswer = models.CharField(max_length=100, null=True, blank=True)
+    qualitativeAnswer = models.CharField(verbose_name='پاسخ کیفی', max_length=100, null=True, blank=True)
+    quantitativeAnswer = models.CharField(verbose_name='پاسخ کمی', max_length=100, null=True, blank=True)
 
     def is_carried_on(self):
         return self.carried_on
 
 
-class PunishmentReward(models.Model):
-    method = models.TextField(null=False, blank=False)
+class PunishmentReward(models.Model):  # TODO
+    method = models.TextField(verbose_name='روش', null=False, blank=False)
     type = models.NullBooleanField(null=True)
     season = models.ForeignKey('Season', on_delete=models.CASCADE, related_name="punishment_rewards",
                                related_query_name="punishment_rewards", null=False,

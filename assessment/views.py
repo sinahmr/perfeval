@@ -40,15 +40,7 @@ class AddScaleView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         return False
 
     def get_success_url(self):
-        return reverse('scale_list')
-
-
-class ScaleListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
-    template_name = "assessment/scale-list.html"
-    model = Scale
-
-    def test_func(self):
-        return True
+        return reverse('dashboard')
 
 
 class EmployeesListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
@@ -56,7 +48,24 @@ class EmployeesListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Employee
 
     def test_func(self):
-        return True
+        if self.request.user.is_admin():
+            return True
+        return False
+
+    def get_context_data(self, **kwargs):
+        context = super(EmployeesListView, self).get_context_data(**kwargs)
+        employees = Employee.objects.all()
+        for emp in employees:
+            emp.has_assessor = False
+            emp.assessment_done = False
+            assessment = emp.assessments_as_assessed.filter(season=Season.objects.get_current_season()).first()
+            if assessment:
+                emp.has_assessor = True
+                if assessment.is_done():
+                    emp.assessment_done = True
+
+        context['employees'] = employees
+        return context
 
 
 class ShowEmployeeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
