@@ -20,8 +20,10 @@
             padding: 3px;
         }
     </style>
+    {% block style %}{% endblock %}
 </head>
 <body dir="rtl">
 {% block content %}{% endblock %}
 </body>
+{% block script %}{% endblock %}
 </html>
