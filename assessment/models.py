@@ -1,8 +1,6 @@
 from django.contrib.auth.models import UserManager as DjangoUserManager
 from django.db import models
 
-from authentication.models import Employee
-
 
 class SeasonManager(DjangoUserManager):
     def get_current_season(self):
@@ -14,6 +12,9 @@ class Season(models.Model):
 
     objects = SeasonManager()
 
+    def get_title(self):
+        return self.title
+
 
 class QualitativeCriterion(models.Model):
     choices = models.CharField(verbose_name='انتخاب‌ها', max_length=200, null=False, blank=False)
@@ -24,10 +25,19 @@ class QualitativeCriterion(models.Model):
             return []
         return self.choices.split('\n')
 
+    def get_interpretation(self):
+        return self.interpretation
+
 
 class QuantitativeCriterion(models.Model):
     formula = models.CharField(verbose_name='فرمول', max_length=20, null=False, blank=False)
     interpretation = models.TextField()
+
+    def get_formula(self):
+        return self.formula
+
+    def get_interpretation(self):
+        return self.interpretation
 
 
 class Scale(models.Model):
@@ -39,14 +49,23 @@ class Scale(models.Model):
     def get_title(self):
         return self.title
 
+    def get_description(self):
+        return self.description
+
     def __str__(self):
         return self.get_title()
 
-    def set_qual_criterion(self, qual):
+    def set_qualitative_criterion(self, qual):
         self.qualitativeCriterion = qual
 
-    def set_quan_criterion(self, quan):
+    def set_quantitative_criterion(self, quan):
         self.quantitativeCriterion = quan
+
+    def get_qualitative_criterion(self):
+        return self.qualitativeCriterion
+
+    def get_quantitative_criterion(self):
+        return self.quantitativeCriterion
 
 
 class Assessment(models.Model):
@@ -88,6 +107,9 @@ class Assessment(models.Model):
     def get_assessed(self):
         return self.assessed
 
+    def get_scale_answers(self):
+        return self.scale_answers.all()
+
     def is_done(self):
         scale_answers = self.scale_answers.all()
         for sc_a in scale_answers:
@@ -104,9 +126,30 @@ class ScaleAnswer(models.Model):
     qualitativeAnswer = models.CharField(verbose_name='پاسخ کیفی', max_length=100, null=True, blank=True)
     quantitativeAnswer = models.CharField(verbose_name='پاسخ کمی', max_length=100, null=True, blank=True)
 
+    def set_carried_on(self, carried_on):
+        self.carried_on = carried_on
+
     def is_carried_on(self):
         return self.carried_on
 
+    def get_assessment(self):
+        return self.assessment
+
+    def get_scale(self):
+        return self.scale
+
+    def get_qualitative_answer(self):
+        return self.qualitativeAnswer
+
+    def get_quantitative_answer(self):
+        return self.quantitativeAnswer
+
+
+    def set_qualitative_answer(self, qual):
+        self.qualitativeAnswer = qual
+
+    def set_quantitative_answer(self, quan):
+        self.quantitativeAnswer = quan
 
 class PunishmentReward(models.Model):
     TYPE_CHOICES = (
@@ -118,3 +161,12 @@ class PunishmentReward(models.Model):
     type = models.CharField(verbose_name='نوع', max_length=1, choices=TYPE_CHOICES, default='N')
     method = models.TextField(verbose_name='روش', null=True, blank=True)
     assessment = models.OneToOneField('Assessment', on_delete=models.CASCADE)
+
+    def get_type(self):
+        return self.type
+
+    def get_method(self):
+        return self.method
+
+    def get_assessment(self):
+        return self.assessment

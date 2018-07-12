@@ -21,10 +21,10 @@
                 {% for ans in answers%}
                     <tr>
                       <th scope="row">{{ forloop.counter }}</th>
-                      <td>{{ ans.assessment.assessed.get_user.get_name }}</td>
-                      <td>{{ ans.scale.get_title }}</td>
+                      <td>{{ ans.get_assessment.get_assessed.get_user.get_name }}</td>
+                      <td>{{ ans.get_scale.get_title }}</td>
 {#                      <td>{% if ans.carried_on %}<span style="color: green">بله</span>{% else %}<span style="color: red">خیر</span>{% endif %}</td>#}
-                      <td> <a href="{% url 'assess' pk=ans.id %}" style="color: #721c24;">انجام ارزیابی</a></td>
+                      <td> <a href="{% url 'assess' pk=ans.get_id %}" style="color: #721c24;">انجام ارزیابی</a></td>
                     </tr>
                 {% endfor %}
           </tbody>

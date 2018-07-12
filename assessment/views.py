@@ -62,7 +62,8 @@ class ShowEmployeeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
     def test_func(self):
         if self.request.user.is_admin():
-            return True
+            if self.request.user.id != self.kwargs.get("pk"):
+                return True
         if self.request.user.is_employee():
             if self.request.user.id == self.kwargs.get("pk"):
                 return True
@@ -76,6 +77,7 @@ class ShowEmployeeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         employee = None
         if user:
             employee = user.get_employee()
+            print(user.get_job())
             if employee:
                 assessment = employee.get_current_assessment()
         else:
@@ -124,7 +126,7 @@ class DoAssessmentView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super(DoAssessmentView, self).get_context_data(**kwargs)
         sa = self.get_object()
-        context['assessed'] = sa.assessment.assessed.get_user()
+        context['assessed'] = sa.get_assessment().get_assessed().get_user()
         context['scale'] = sa.scale
         return context
 

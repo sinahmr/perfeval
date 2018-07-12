@@ -19,7 +19,7 @@
             <br/>
         {% endif %}
         {% if is_employee %}
-            <a href="{% url 'show_employee' pk=user.get_employee.id %}">مشخصات و ارزیابی من</a>
+            <a href="{% url 'show_employee' pk=user.get_id %}">مشخصات و ارزیابی من</a>
             <br/>
             <a href="{% url 'assessment_list' %}">لیست ارزیابی‌های در دست انجام</a>
             <br/>

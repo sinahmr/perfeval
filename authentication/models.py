@@ -2,7 +2,6 @@ from django.contrib.auth.models import AbstractUser, UserManager as DjangoUserMa
 from django.db import IntegrityError
 from django.db import models
 from django.db.models import QuerySet
-from polymorphic.models import PolymorphicModel
 
 from .exceptions import RepetitiousUsername
 from assessment.models import ScaleAnswer, Season
@@ -15,9 +14,13 @@ class Unit(models.Model):
         return self.name
 
 
-class Job(PolymorphicModel):
-    pass
+class Job(models.Model):
 
+    def get_id(self):
+        return self.id
+
+    def get_user(self):
+        return User.objects.filter(job_id=self.pk).first()
 
 class Admin(Job):
     pass
@@ -26,11 +29,13 @@ class Admin(Job):
 class Employee(Job):
     units = models.ManyToManyField(Unit, verbose_name='واحدها')
 
+
+
     def get_assesseds(self):
         return self.assessments_as_assessor.filter()  # TODO should not show all, should show not considered ones
 
-    def get_user(self):
-        return User.objects.filter(job_id=self.pk).first()
+    def get_assessor(self):
+        return self.assessments_as_assessed.first().get_assessor()
 
     def get_unresolved_answers(self):
         return ScaleAnswer.objects.filter(carried_on=False, assessment__assessor__user=self.get_user())
@@ -100,6 +105,18 @@ class User(AbstractUser):
 
     objects = UserManager()
 
+    def get_first_name(self):
+        return self.first_name
+
+    def get_last_name(self):
+        return self.last_name
+
+    def get_year_of_birth(self):
+        return self.year_of_birth
+
+    def get_id(self):
+        return self.id
+
     def get_name(self):
         if self.first_name or self.last_name:
             return self.first_name + ' ' + self.last_name
@@ -107,7 +124,7 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.get_name()
-
+#################################################TODO get solution from pooya mosadegh
     def is_admin(self):
         if not self.job:
             return False
@@ -131,7 +148,7 @@ class User(AbstractUser):
         if self.is_employee():
             return self.job.employee
         return None
-
+###################################################33
     def set_job(self, job):
         self.job = job
 
@@ -147,3 +164,5 @@ class User(AbstractUser):
         return self.personnel_code
 
 
+    def get_job(self):
+        return self.job

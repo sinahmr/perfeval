@@ -54,7 +54,7 @@
 
     <div class="container">
         {% for emp in employees %}
-            <a href="{% url 'show_employee' pk=emp.id %}">
+            <a href="{% url 'show_employee' pk=emp.get_id %}">
                 <div class="filterDiv {% if not emp.has_assessor %}noassessor{% endif %} {% if emp.assessment_done %}done{% endif %}">{{ emp.get_user.get_name }}</div>
             </a>
         {% endfor %}

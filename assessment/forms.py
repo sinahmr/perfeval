@@ -41,12 +41,12 @@ class AddScaleForm(forms.ModelForm):
                 quan = QuantitativeCriterion.objects.create(formula=self.cleaned_data['quan_criterion_formula'],
                                                             interpretation=self.cleaned_data[
                                                                 'quan_interpretation'])
-                scale.set_quan_criterion(quan)
+                scale.set_quantitative_criterion(quan)
             if self.cleaned_data.get('qual_criterion_choices'):
                 qual = QualitativeCriterion.objects.create(choices=self.cleaned_data['qual_criterion_choices'],
                                                            interpretation=self.cleaned_data[
                                                                'qual_interpretation'])
-                scale.set_qual_criterion(qual)
+                scale.set_qualitative_criterion(qual)
 
             scale.save()
         return scale
@@ -59,14 +59,14 @@ class ScaleAnswerForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ScaleAnswerForm, self).__init__(*args, **kwargs)
-        if self.instance.scale.qualitativeCriterion:
-            self.choices = self.instance.scale.qualitativeCriterion.get_choices_list()
+        if self.instance.scale.get_qualitative_criterion():
+            self.choices = self.instance.scale.get_qualitative_criterion().get_choices_list()
             choices = [(i, c) for i, c in enumerate(self.choices)]
             self.fields['qualitativeAnswer'] = forms.ChoiceField(label='پاسخ کیفی', choices=choices)
         else:
             del self.fields['qualitativeAnswer']
 
-        if self.instance.scale.quantitativeCriterion:
+        if self.instance.scale.get_quantitative_criterion():
             pass
         else:
             del self.fields['quantitativeAnswer']
@@ -74,15 +74,15 @@ class ScaleAnswerForm(forms.ModelForm):
     def clean(self):
         quan = self.cleaned_data.get('quantitativeAnswer', '')
         qual = self.cleaned_data.get('qualitativeAnswer', '')
-        if self.instance.scale.qualitativeCriterion and not qual:
+        if self.instance.scale.get_qualitative_criterion() and not qual:
             raise forms.ValidationError('پاسخ کیفی را وارد کنید')
-        if self.instance.scale.quantitativeCriterion and not quan:
+        if self.instance.scale.get_quantitative_criterion() and not quan:
             raise forms.ValidationError('پاسخ کمی را وارد کنید')
 
     def save(self, commit=True):
         ans = super(ScaleAnswerForm, self).save(commit=False)
-        index_of_choice = int(ans.qualitativeAnswer)
-        ans.qualitativeAnswer = self.choices[index_of_choice]
+        index_of_choice = int(ans.get_qualitative_answer())
+        ans.set_qualitative_answer(self.choices[index_of_choice])
         ans.carried_on = True
         if commit:
             ans.save()

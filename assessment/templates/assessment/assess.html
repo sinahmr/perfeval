@@ -7,15 +7,15 @@
         <table>
             <tr>
                 <td>نام</td>
-                <td>{{ assessed.first_name }}</td>
+                <td>{{ assessed.get_first_name }}</td>
             </tr>
             <tr>
                 <td>نام خانوادگی</td>
-                <td>{{ assessed.last_name }}</td>
+                <td>{{ assessed.get_last_name }}</td>
             </tr>
             <tr>
                 <td>سال تولد</td>
-                <td>{{ assessed.year_of_birth }}</td>
+                <td>{{ assessed.get_year_of_birth }}</td>
             </tr>
             <tr>
                 <td>واحدها</td>
@@ -29,27 +29,27 @@
             <table>
                 <tr>
                     <td>نام معیار</td>
-                    <td>{{ scale.title }}</td>
+                    <td>{{ scale.get_title }}</td>
                 </tr>
                 <tr>
                     <td>توضیحات معیار</td>
-                    <td>{{ scale.description }}</td>
+                    <td>{{ scale.get_description }}</td>
                 </tr>
-                {% if scale.quantitativeCriterion %}
+                {% if scale.get_quantitativeCriterion %}
                     <tr>
                         <td>فرمول کمی</td>
-                        <td>{{ scale.quantitativeCriterion.formula }}</td>
+                        <td>{{ scale.get_quantitativeCriterion.get_formula }}</td>
                     </tr>
                     <tr>
                         <td>تفسیر کمی</td>
-                        <td>{{ scale.quantitativeCriterion.interpretation }}</td>
+                        <td>{{ scale.get_quantitativeCriterion.get_interpretation }}</td>
                     </tr>
                 {% endif %}
-                {% if scale.qualitativeCriterion %}
+                {% if scale.get_qualitativeCriterion %}
                     <tr>
                         <td>گزینه‌های کیفی</td>
                             <td>
-                                {% for item in scale.qualitativeCriterion.get_choices_list %}
+                                {% for item in scale.get_qualitativeCriterion.get_choices_list %}
                                     <span>{{ item }}</span>
                                     {% if not forloop.last %}
                                         <span>&nbsp;&nbsp;|&nbsp;&nbsp;</span>
@@ -60,7 +60,7 @@
                     </tr>
                     <tr>
                         <td>تفسیر کیفی</td>
-                        <td>{{ scale.qualitativeCriterion.interpretation }}</td>
+                        <td>{{ scale.get_qualitativeCriterion.get_interpretation }}</td>
                     </tr>
                 {% endif %}
             </table>
