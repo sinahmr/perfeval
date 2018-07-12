@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.views.generic import ListView, TemplateView, CreateView, UpdateView
 
 from assessment.forms import CreateAssessmentForm
-from assessment.models import Scale, PunishmentReward, ScaleAnswer, Assessment, Season
+from assessment.models import PunishmentReward, ScaleAnswer, Assessment, Season
 from authentication.models import Employee, User
 from . import forms
 
@@ -107,42 +107,14 @@ class ShowEmployeeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         return context
 
 
-class ShowMyDetailsView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
-    model = Employee
-    template_name = 'assessment/show-employee.html'
-
-    def test_func(self):
-        if self.request.user.is_employee():
-            return True
-        return False
-
-    def get_context_data(self, **kwargs):
-        context = super(ShowMyDetailsView, self).get_context_data(**kwargs)
-        user = self.request.user
-        assessment = user.get_employee().assessments_as_assessed.last()
-        has_assessment = True
-        done_assessment = True
-        if assessment is None:
-            has_assessment = False
-            done_assessment = False
-        if has_assessment:
-            done_assessment = assessment.is_done()
-
-        context['user'] = user
-        context['assessment'] = assessment
-        context['has_assessment'] = has_assessment
-        context['done_assessment'] = done_assessment
-        return context
-
-
-class CreateAssesment(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+class CreateAssessment(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Assessment
     template_name = 'assessment/add-assessment.html'
     form_class = CreateAssessmentForm
     user = None
 
     def get_form_kwargs(self):
-        kwargs = super(CreateAssesment, self).get_form_kwargs()
+        kwargs = super(CreateAssessment, self).get_form_kwargs()
         self.user = User.objects.get_by_id(self.kwargs.get("pk"))
         kwargs.update({'user': self.user})
         return kwargs
@@ -154,14 +126,6 @@ class CreateAssesment(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 
     def get_success_url(self):
         return reverse('show_my_details')
-
-
-class PunishmentRewardListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
-    template_name = "assessment/scale-list.html"
-    model = PunishmentReward
-
-    def test_func(self):
-        return True
 
 
 class DoAssessmentView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
