@@ -37,6 +37,10 @@
                                  {% endif %}
                              </ul>
                         {% endfor %}
+
+                        <div>
+                            <a href="{% url 'punishment_reward' pk=assessment.get_punishment_reward.id %}">تعیین روش تشویق و تنبیه</a>
+                        </div>
                     {% else %}
                         <div>
                             <ul>

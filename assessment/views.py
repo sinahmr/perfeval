@@ -152,8 +152,6 @@ class CreateAssesment(LoginRequiredMixin, UserPassesTestMixin, CreateView):
             return True
         return False
 
-    # def
-
     def get_success_url(self):
         return reverse('show_my_details')
 
@@ -187,12 +185,18 @@ class DoAssessmentView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return reverse('assessment_list')
 
 
-class SetPunishmentRewardView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
-    template_name = "assessment/scale-list.html"
+class SetPunishmentRewardView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = PunishmentReward
+    form_class = forms.PunishmentRewardForm
+    template_name = "assessment/punishment-reward.html"
 
     def test_func(self):
-        return True
+        if self.request.user.is_admin():
+            return True
+        return False
+
+    def get_success_url(self):
+        return reverse('employee_list')
 
 
 class AddSeasonView(LoginRequiredMixin, UserPassesTestMixin, CreateView):

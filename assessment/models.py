@@ -59,11 +59,14 @@ class Assessment(models.Model):
     season = models.ForeignKey('Season', on_delete=models.CASCADE, related_name="assessments",
                                related_query_name="assessments", null=False, blank=False)
 
-    unique_together = ("assessed", "season")
+    unique_together = ('assessed', 'season')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.set_season()
+
+    def get_punishment_reward(self):
+        return self.punishmentreward
 
     def set_season(self):
         self.season = Season.objects.last()
@@ -94,12 +97,13 @@ class ScaleAnswer(models.Model):
         return self.carried_on
 
 
-class PunishmentReward(models.Model):  # TODO
-    method = models.TextField(verbose_name='روش', null=False, blank=False)
-    type = models.NullBooleanField(null=True)
-    season = models.ForeignKey('Season', on_delete=models.CASCADE, related_name="punishment_rewards",
-                               related_query_name="punishment_rewards", null=False,
-                               blank=False)
-    employee = models.ForeignKey('authentication.Employee', on_delete=models.CASCADE)
+class PunishmentReward(models.Model):
+    TYPE_CHOICES = (
+        ('R', 'تشویق'),
+        ('P', 'تنبیه'),
+        ('N', 'نه تشویق و نه تنبیه')
+    )
 
-
+    type = models.CharField(verbose_name='نوع', max_length=1, choices=TYPE_CHOICES, default='N')
+    method = models.TextField(verbose_name='روش', null=True, blank=True)
+    assessment = models.OneToOneField('Assessment', on_delete=models.CASCADE)

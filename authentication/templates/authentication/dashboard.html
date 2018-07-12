@@ -4,6 +4,7 @@
 
 {% block content %}
     <div>سلام {{ user.get_name }}!</div>
+    <br/><br/>
     <div>
         {% if is_admin %}
             <a href="{% url 'add_unit' %}">افزودن واحد جدید</a>
@@ -13,8 +14,6 @@
             <a href="{% url 'add_season' %}">افزودن فصل جدید و پایان فصل جاری</a>
             <br/>
             <a href="{% url 'add_scale' %}">افزودن معیار جدید</a>
-            <br/>
-            <a href="{% url 'scale_list' %}">لیست معیارها</a>
             <br/>
             <a href="{% url 'employee_list' %}">لیست کارمندان</a>
             <br/>
