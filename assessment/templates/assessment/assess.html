@@ -20,7 +20,7 @@
             </tr>
             <tr>
                 <td>واحدها</td>
-                <td>{{ assessed.get_employee.units.all }}</td>
+                <td>{{ assessed.get_employee.get_units_as_string }}</td>
             </tr>
         </table>
     </div>
@@ -36,7 +36,7 @@
                     <td>توضیحات معیار</td>
                     <td>{{ scale.description }}</td>
                 </tr>
-                {% if scale.qualitativeCriterion %}
+                {% if scale.quantitativeCriterion %}
                     <tr>
                         <td>فرمول کمی</td>
                         <td>{{ scale.quantitativeCriterion.formula }}</td>
@@ -46,7 +46,7 @@
                         <td>{{ scale.quantitativeCriterion.interpretation }}</td>
                     </tr>
                 {% endif %}
-                {% if scale.quantitativeCriterion %}
+                {% if scale.qualititativeCriterion %}
                     <tr>
                         <td>گزینه‌های کیفی</td>
                         <td>{{ scale.qualitativeCriterion.choices }}</td>
