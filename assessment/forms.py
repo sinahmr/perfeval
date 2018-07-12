@@ -1,6 +1,6 @@
 from django import forms
 
-from assessment.models import Assessment, Scale, ScaleAnswer, QuantitativeCriterion, QualitativeCriterion
+from assessment.models import Assessment, Scale, ScaleAnswer, QuantitativeCriterion, QualitativeCriterion, Season
 from authentication.models import User
 
 
@@ -113,3 +113,9 @@ class CreateAssessmentForm(forms.ModelForm):
                 sc_a = ScaleAnswer.objects.create(scale=sc, assessment=assessment)
                 sc_a.save()
         return assessment
+
+
+class AddSeasonForm(forms.ModelForm):
+    class Meta:
+        model = Season
+        fields = ['title']

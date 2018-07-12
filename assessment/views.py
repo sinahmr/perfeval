@@ -1,9 +1,9 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse
-from django.views.generic import ListView, TemplateView, CreateView, FormView, UpdateView
+from django.views.generic import ListView, TemplateView, CreateView, UpdateView
 
-from assessment.models import Scale, PunishmentReward, ScaleAnswer, Assessment, QualitativeCriterion, QuantitativeCriterion
 from assessment.forms import CreateAssessmentForm
+from assessment.models import Scale, PunishmentReward, ScaleAnswer, Assessment, Season
 from authentication.models import Employee, User
 from . import forms
 
@@ -77,16 +77,16 @@ class ShowEmployeeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         not_found_user = False
         has_assessment = True
         done_assessment = True
-        if user :
+        if user:
             if user.is_employee():
                 assessment = user.get_employee().assessments_as_assessed.last()
-        else :
+        else:
             not_found_user = True
 
         if assessment is None:
             has_assessment = False
             done_assessment = False
-        if has_assessment :
+        if has_assessment:
             done_assessment = assessment.is_done()
 
         context['done_assessment'] = done_assessment
@@ -117,7 +117,7 @@ class ShowMyDetailsView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         if assessment is None:
             has_assessment = False
             done_assessment = False
-        if has_assessment :
+        if has_assessment:
             done_assessment = assessment.is_done()
 
         context['user'] = user
@@ -139,13 +139,12 @@ class CreateAssesment(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         kwargs.update({'user': self.user})
         return kwargs
 
-
     def test_func(self):
         if self.request.user.is_admin():
             return True
         return False
 
-    #def
+    # def
 
     def get_success_url(self):
         return reverse('show_my_details')
@@ -186,3 +185,21 @@ class SetPunishmentRewardView(LoginRequiredMixin, UserPassesTestMixin, CreateVie
 
     def test_func(self):
         return True
+
+
+class AddSeasonView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    model = Season
+    form_class = forms.AddSeasonForm
+    template_name = 'assessment/add-season.html'
+
+    def test_func(self):
+        if self.request.user.is_admin():
+            return True
+        return False
+
+    def get_success_url(self):
+        return reverse('dashboard')
+
+
+class Dashboard(LoginRequiredMixin, TemplateView):
+    pass

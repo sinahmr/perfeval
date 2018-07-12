@@ -1,6 +1,6 @@
 from django import forms
 
-from authentication.models import User, Unit
+from authentication.models import User, Unit, Employee
 
 
 class AddEmployeeForm(forms.ModelForm):
@@ -24,7 +24,7 @@ class AddEmployeeForm(forms.ModelForm):
             raise forms.ValidationError('عدم تطابق گذرواژه و تکرار آن')
 
     def save(self, commit=True):
-        employee = models.Employee.objects.create()
+        employee = Employee.objects.create()
         employee.set_units(list(self.cleaned_data['employee_units']))
         employee.save()
 
@@ -65,3 +65,9 @@ class ChangeUsernameOrPasswordForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+
+class AddUnitForm(forms.ModelForm):
+    class Meta:
+        model = Unit
+        fields = ['name']
