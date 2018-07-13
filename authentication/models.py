@@ -22,6 +22,7 @@ class Job(models.Model):
     def get_user(self):
         return User.objects.filter(job_id=self.pk).first()
 
+
 class Admin(Job):
     pass
 

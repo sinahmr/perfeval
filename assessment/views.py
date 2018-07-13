@@ -54,8 +54,6 @@ class EmployeesListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         return False
 
 
-
-
 class ShowEmployeeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     model = User
     template_name = 'assessment/show-employee.html'
@@ -77,12 +75,10 @@ class ShowEmployeeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         employee = None
         if user:
             employee = user.get_employee()
-            print(user.get_job())
             if employee:
                 assessment = employee.get_current_assessment()
         else:
             not_found_user = True
-
 
         context['not_found_user'] = not_found_user
         context['user'] = user
@@ -110,7 +106,7 @@ class CreateAssessment(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         return False
 
     def get_success_url(self):
-        return reverse('show_my_details')
+        return reverse('dashboard')
 
 
 class DoAssessmentView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):

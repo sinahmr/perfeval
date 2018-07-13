@@ -98,7 +98,7 @@ class Assessment(models.Model):
     def set_assessor(self, employee):
         self.assessor = employee
 
-    def set_assessed(self, employee) :
+    def set_assessed(self, employee):
         self.assessed = employee
 
     def get_assessor(self):
@@ -132,6 +132,9 @@ class ScaleAnswer(models.Model):
     def is_carried_on(self):
         return self.carried_on
 
+    def get_id(self):
+        return self.id
+
     def get_assessment(self):
         return self.assessment
 
@@ -144,12 +147,12 @@ class ScaleAnswer(models.Model):
     def get_quantitative_answer(self):
         return self.quantitativeAnswer
 
-
     def set_qualitative_answer(self, qual):
         self.qualitativeAnswer = qual
 
     def set_quantitative_answer(self, quan):
         self.quantitativeAnswer = quan
+
 
 class PunishmentReward(models.Model):
     TYPE_CHOICES = (
@@ -161,6 +164,9 @@ class PunishmentReward(models.Model):
     type = models.CharField(verbose_name='نوع', max_length=1, choices=TYPE_CHOICES, default='N')
     method = models.TextField(verbose_name='روش', null=True, blank=True)
     assessment = models.OneToOneField('Assessment', on_delete=models.CASCADE)
+
+    def get_id(self):
+        return self.id
 
     def get_type(self):
         return self.type
