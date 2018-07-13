@@ -15,6 +15,9 @@ class Season(models.Model):
     def get_title(self):
         return self.title
 
+    def get_id(self):
+        return self.id
+
 
 class QualitativeCriterion(models.Model):
     choices = models.CharField(verbose_name='انتخاب‌ها', max_length=200, null=False, blank=False)
@@ -28,6 +31,9 @@ class QualitativeCriterion(models.Model):
     def get_interpretation(self):
         return self.interpretation
 
+    def get_id(self):
+        return self.id
+
 
 class QuantitativeCriterion(models.Model):
     formula = models.CharField(verbose_name='فرمول', max_length=20, null=False, blank=False)
@@ -38,6 +44,9 @@ class QuantitativeCriterion(models.Model):
 
     def get_interpretation(self):
         return self.interpretation
+
+    def get_id(self):
+        return self.id
 
 
 class Scale(models.Model):
@@ -66,6 +75,9 @@ class Scale(models.Model):
 
     def get_quantitative_criterion(self):
         return self.quantitativeCriterion
+
+    def get_id(self):
+        return self.id
 
 
 class Assessment(models.Model):
@@ -116,6 +128,9 @@ class Assessment(models.Model):
             if sc_a.is_carried_on() is False:
                 return False
         return True
+
+    def get_id(self):
+        return self.id
 
 
 class ScaleAnswer(models.Model):
