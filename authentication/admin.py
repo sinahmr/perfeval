@@ -8,5 +8,6 @@ admin.site.register(models.Unit)
 admin.site.register(models.User)
 admin.site.register(models.Admin)
 admin.site.register(models.Employee)
+admin.site.register(models.Permission)
 
 

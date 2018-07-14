@@ -32,6 +32,7 @@ class AddEmployeeForm(forms.ModelForm):
         user.set_password(self.cleaned_data['password'])
         user.set_job(employee)
 
+
         if commit:
             user.save()
         return user

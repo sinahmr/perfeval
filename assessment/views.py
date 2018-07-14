@@ -13,9 +13,7 @@ class AssessedsListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     template_name = 'assessment/assessment-list.html'
 
     def test_func(self):
-        if self.request.user.is_employee():
-            return True
-        return False
+        return self.request.user.has_permission("R", "A")#read #assessment
 
     def get_queryset(self):
         assessor = self.request.user.get_employee()
@@ -35,9 +33,7 @@ class AddScaleView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     form_class = forms.AddScaleForm
 
     def test_func(self):
-        if self.request.user.is_admin():
-            return True
-        return False
+        return self.request.user.has_permission("C", "S")#create #scale
 
     def get_success_url(self):
         return reverse('dashboard')
@@ -49,43 +45,18 @@ class EmployeesListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     context_object_name = "employees"
 
     def test_func(self):
-        if self.request.user.is_admin():
-            return True
-        return False
+        return self.request.user.has_permission("R", "E") #read #employee
 
 
-class ShowEmployeeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+class ShowEmployeeView(LoginRequiredMixin, TemplateView):
     model = User
     template_name = 'assessment/show-employee.html'
-
-    def test_func(self):
-        if self.request.user.is_admin():
-            if self.request.user.id != self.kwargs.get("pk"):
-                return True
-        if self.request.user.is_employee():
-            if self.request.user.id == self.kwargs.get("pk"):
-                return True
-        return False
 
     def get_context_data(self, **kwargs):
         context = super(ShowEmployeeView, self).get_context_data(**kwargs)
         user = User.objects.get_by_id(self.kwargs.get("pk"))  # TODO handle None
-        not_found_user = False
-        assessment = None
-        employee = None
-        if user:
-            employee = user.get_employee()
-            if employee:
-                assessment = employee.get_current_assessment()
-        else:
-            not_found_user = True
+        return self.request.user.show_employee_page(self, user, context)
 
-        context['not_found_user'] = not_found_user
-        context['user'] = user
-        context['employee'] = employee
-        context['viewer'] = self.request.user
-        context['assessment'] = assessment
-        return context
 
 
 class CreateAssessment(LoginRequiredMixin, UserPassesTestMixin, CreateView):
@@ -101,9 +72,7 @@ class CreateAssessment(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         return kwargs
 
     def test_func(self):
-        if self.request.user.is_admin():
-            return True
-        return False
+        return self.request.user.has_permission("C", "A")  # create #Assessment
 
     def get_success_url(self):
         return reverse('dashboard')
@@ -115,9 +84,7 @@ class DoAssessmentView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     template_name = 'assessment/assess.html'
 
     def test_func(self):
-        if self.request.user.is_employee():
-            return True
-        return False
+        return self.request.user.has_permission("E", "A")  #edit #Assessment
 
     def get_context_data(self, **kwargs):
         context = super(DoAssessmentView, self).get_context_data(**kwargs)
@@ -136,9 +103,7 @@ class SetPunishmentRewardView(LoginRequiredMixin, UserPassesTestMixin, UpdateVie
     template_name = "assessment/punishment-reward.html"
 
     def test_func(self):
-        if self.request.user.is_admin():
-            return True
-        return False
+        return self.request.user.has_permission("E", "P")  # create #Assessment
 
     def get_success_url(self):
         return reverse('employee_list')
@@ -150,9 +115,7 @@ class AddSeasonView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     template_name = 'assessment/add-season.html'
 
     def test_func(self):
-        if self.request.user.is_admin():
-            return True
-        return False
+        return self.request.user.has_permission("C", "N")  #createe #Season
 
     def get_success_url(self):
         return reverse('dashboard')
