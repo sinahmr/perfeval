@@ -3,8 +3,9 @@ from django.db import IntegrityError
 from django.db import models
 from django.db.models import QuerySet
 from django.http import Http404
+from polymorphic.models import PolymorphicModel
 
-from assessment.models import ScaleAnswer, Season
+from assessment.models import ScaleAnswer, Season, QuantitativeCriterion, QualitativeCriterion, Assessment
 
 ACTION_CHOICES = (
     ('C', 'create'),
@@ -36,7 +37,7 @@ class Unit(models.Model):
         return self.name
 
 
-class Job(models.Model):
+class Job(PolymorphicModel):
 
     permissions = models.ManyToManyField(Permission)
 
@@ -47,32 +48,36 @@ class Job(models.Model):
     def get_user(self):
         return self.user.first()
 
+    def get_name(self):
+        return self.get_user().get_name()
+
     def set_permissions(self):
         pass
 
     def get_permissions(self):
         return self.permissions.all()
 
-    def show_employee_page(self,user, context):
+    def show_employee_page(self,employee, context):
         pass
 
-    def _employee_details(self, user, context):
+    def _employee_details(self, employee, context):
         not_found_user = False
-        assessment = None
-        employee = None
-        if user:
-            employee = user.get_employee()
-            if employee:
-                assessment = employee.get_current_assessment()
-        else:
+        user = employee.get_user()
+        assessment = employee.get_current_assessment()
+        if not user:
             not_found_user = True
-
         context['not_found_user'] = not_found_user
         context['user'] = user
         context['employee'] = employee
-        context['viewer'] = self.get_user()
+        context['is_admin'] = self.is_admin()
         context['assessment'] = assessment
         return context
+
+    def is_admin(self):
+        pass
+
+    def is_employee(self):
+        pass
 
 class Admin(Job):
 
@@ -92,12 +97,34 @@ class Admin(Job):
             return self._employee_details(user, context)
         raise Http404("access denied")
 
+    def is_admin(self):
+        return True
+
+    def is_employee(self):
+        return False
+
+    def add_employee(self, units):
+        employee = Employee.objects.create()
+        employee.set_units(units)
+        employee.save()
+        return employee
+
+    def add_scale(self,scale,quan,qual,interpretation):
+
+        if qual:
+            qual = QualitativeCriterion.objects.create(choices=qual,
+                                                       interpretation=interpretation)
+            scale.set_qualitative_criterion(qual)
+        if quan:
+            quan = QuantitativeCriterion.objects.create(formula=quan,
+                                                        interpretation=interpretation)
+            scale.set_quantitative_criterion(quan)
+        return scale
 
 
 class Employee(Job):
 
     units = models.ManyToManyField(Unit, verbose_name='واحدها')
-
 
     def get_assesseds(self):
         return self.assessments_as_assessor.filter()  # TODO should not show all, should show not considered ones
@@ -138,10 +165,20 @@ class Employee(Job):
         self.permissions.add(Permission.objects.get(action="R", object="A"))
         self.save()
 
-    def show_employee_page(self,user, context):
-        if self.get_user() == user:
-            return self._employee_details(user, context)
+    def show_employee_page(self, employee, context):
+        if self == employee:
+            return self._employee_details(employee, context)
         raise Http404("access denied")
+
+    def is_admin(self):
+        return False
+
+    def is_employee(self):
+        return True
+
+    def create_assessment(self,assessor,assessed):
+        return Assessment.objects.create(assessor=assessor,
+                                               assessed=assessed)
 
 class UserQuerySet(QuerySet):
     def employees(self):
@@ -181,7 +218,6 @@ class User(AbstractUser):
 
     objects = UserManager()
 
-
     def set_permission(self):
         self.job.set_permission()
 
@@ -208,36 +244,12 @@ class User(AbstractUser):
     def __str__(self):
         return self.get_name()
 
+    def get_job(self):
+        return self.job
 
-#################################################TODO
-    def is_admin(self):
-        if not self.job:
-            return False
-        if hasattr(self.job, 'admin'):
-            return True
-        return False
-
-    def is_employee(self):
-        if not self.job:
-            return False
-        if hasattr(self.job, 'employee'):
-            return True
-        return False
-
-    def get_admin(self)-> Admin:
-        if self.is_admin():
-            return self.job.admin
-        return None
-
-    def get_employee(self)-> Employee:
-        if self.is_employee():
-            return self.job.employee
-        return None
-###################################################33
     def set_job(self, job):
         self.job = job
         self.job.set_permissions()
-
 
     def get_personnel_code(self):
         return self.personnel_code
@@ -248,8 +260,8 @@ class User(AbstractUser):
                 return True
         raise Http404("permission denied!")
 
-    def show_employee_page(self,user , context):
-        return self.job.show_employee_page(user, context)
+    def show_employee_page(self,employee , context):
+        return self.get_job().show_employee_page(employee, context)
 
 
 

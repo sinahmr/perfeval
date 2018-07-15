@@ -168,6 +168,20 @@ class ScaleAnswer(models.Model):
     def set_quantitative_answer(self, quan):
         self.quantitativeAnswer = quan
 
+    def get_scale_title(self):
+        return self.get_scale().get_title()
+
+    def get_assessed(self):
+        return self.get_assessment().get_assessed()
+
+    def get_assessor(self):
+        return self.get_assessment().get_assessor()
+
+    def get_scale_qualitative_criterion(self):
+        return self.get_scale().get_qualitative_criterion()
+
+    def get_scale_quantitative_criterion(self):
+        return self.get_scale().get_quantitative_criterion()
 
 class PunishmentReward(models.Model):
     TYPE_CHOICES = (
@@ -191,3 +205,5 @@ class PunishmentReward(models.Model):
 
     def get_assessment(self):
         return self.assessment
+
+

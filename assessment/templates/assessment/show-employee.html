@@ -23,11 +23,11 @@
         <div>
             {% if employee.has_assessment %}
                 <div>
-                    <div>ارزیاب: <span>{{ assessment.get_assessor.get_user.get_name }}</span></div>
+                    <div>ارزیاب: <span>{{ assessment.get_assessor.get_name }}</span></div>
                     <br/>
                     {% if employee.assessment_done %}
                         {% for sc in assessment.get_scale_answers %}
-                             <div>معیار: <span>{{ sc.get_scale.get_title }}</span></div>
+                             <div>معیار: <span>{{ sc.get_scale_title }}</span></div>
                             <ul>
                                 {% if sc.get_qualitative_answer %}
                                     <li>پاسخ کیفی: <span>{{ sc.get_qualitative_answer }}</span></li>
@@ -38,7 +38,7 @@
                              </ul>
                         {% endfor %}
 
-                        {% if viewer.is_admin %}
+                        {% if is_admin %}
                             <div>
                                 <a href="{% url 'punishment_reward' pk=assessment.get_punishment_reward.get_id %}">تعیین روش تشویق و تنبیه</a>
                             </div>
@@ -56,8 +56,8 @@
                 <span>ارزیابی نشده است</span>
                 <br>
                 <br>
-                {% if viewer.is_admin %}
-                    <div><a href="{% url 'create_assessment' pk=user.get_id %}" style="color: #721c24;">تعیین ارزیاب و معیار ارزیابی</a></div>
+                {% if is_admin %}
+                    <div><a href="{% url 'create_assessment' pk=employee.get_id %}" style="color: #721c24;">تعیین ارزیاب و معیار ارزیابی</a></div>
                 {% endif %}
             {% endif %}
         </div>

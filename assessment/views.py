@@ -16,7 +16,7 @@ class AssessedsListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         return self.request.user.has_permission("R", "A")#read #assessment
 
     def get_queryset(self):
-        assessor = self.request.user.get_employee()
+        assessor = self.request.user.get_job()
         answers = assessor.get_unresolved_answers()
         return answers
 
@@ -38,6 +38,11 @@ class AddScaleView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     def get_success_url(self):
         return reverse('dashboard')
 
+    def get_form_kwargs(self):
+        kwargs = super(AddScaleView, self).get_form_kwargs()
+        kwargs.update({'user': self.request.user})
+        return kwargs
+
 
 class EmployeesListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     template_name = "assessment/employee-list.html"
@@ -54,8 +59,8 @@ class ShowEmployeeView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(ShowEmployeeView, self).get_context_data(**kwargs)
-        user = User.objects.get_by_id(self.kwargs.get("pk"))  # TODO handle None
-        return self.request.user.show_employee_page(self, user, context)
+        employee = Employee.objects.filter(id=self.kwargs.get("pk")).first()  # TODO handle None
+        return self.request.user.show_employee_page(self, employee, context)
 
 
 
@@ -67,8 +72,8 @@ class CreateAssessment(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 
     def get_form_kwargs(self):
         kwargs = super(CreateAssessment, self).get_form_kwargs()
-        self.user = User.objects.get_by_id(self.kwargs.get("pk"))
-        kwargs.update({'user': self.user})
+        self.assessed = Employee.objects.filter(id=self.kwargs.get("pk")).first()
+        kwargs.update({'user': self.assessed})
         return kwargs
 
     def test_func(self):
@@ -89,8 +94,9 @@ class DoAssessmentView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super(DoAssessmentView, self).get_context_data(**kwargs)
         sa = self.get_object()
-        context['assessed'] = sa.get_assessment().get_assessed().get_user()
-        context['scale'] = sa.scale
+        context['assessed'] = sa.get_assessed()
+        context['user'] = sa.get_assessed().get_user()
+        context['scale'] = sa.get_scale()
         return context
 
     def get_success_url(self):

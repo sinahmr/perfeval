@@ -25,6 +25,11 @@ class AddEmployeeView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     template_name = 'authentication/add-employee.html'
     form_class = forms.AddEmployeeForm
 
+    def get_form_kwargs(self):
+        kwargs = super(AddEmployeeView, self).get_form_kwargs()
+        kwargs.update({'user': self.request.user})
+        return kwargs
+
     def test_func(self):
         return self.request.user.has_permission("C", "E") #create #employee
 
@@ -62,6 +67,6 @@ class Dashboard(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super(Dashboard, self).get_context_data(**kwargs)
         context['user'] = self.request.user
-        context['is_admin'] = self.request.user.is_admin()
-        context['is_employee'] = self.request.user.is_employee()
+        context['is_admin'] = self.request.user.get_job().is_admin()
+        context['is_employee'] = self.request.user.get_job().is_employee()
         return context

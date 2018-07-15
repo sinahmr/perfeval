@@ -16,6 +16,10 @@ class AddEmployeeForm(forms.ModelForm):
         widgets = {'password': forms.PasswordInput()}
         help_texts = {'username': None}
 
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user')
+        super(AddEmployeeForm, self).__init__(*args, **kwargs)
+
     def clean(self):
         cd = self.cleaned_data
         password = cd.get('password')
@@ -24,18 +28,16 @@ class AddEmployeeForm(forms.ModelForm):
             raise forms.ValidationError('عدم تطابق گذرواژه و تکرار آن')
 
     def save(self, commit=True):
-        employee = Employee.objects.create()
-        employee.set_units(list(self.cleaned_data['employee_units']))
-        employee.save()
-
+        admin = self.user.get_job()
+        employee = admin.add_employee(units=self.cleaned_data['employee_units'])
         user = super(AddEmployeeForm, self).save(commit=False)
         user.set_password(self.cleaned_data['password'])
         user.set_job(employee)
 
-
         if commit:
             user.save()
         return user
+
 
 
 class LoginForm(forms.Form):

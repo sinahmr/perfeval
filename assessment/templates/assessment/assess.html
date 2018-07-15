@@ -7,19 +7,19 @@
         <table>
             <tr>
                 <td>نام</td>
-                <td>{{ assessed.get_first_name }}</td>
+                <td>{{ user.get_first_name }}</td>
             </tr>
             <tr>
                 <td>نام خانوادگی</td>
-                <td>{{ assessed.get_last_name }}</td>
+                <td>{{ user.get_last_name }}</td>
             </tr>
             <tr>
                 <td>سال تولد</td>
-                <td>{{ assessed.get_year_of_birth }}</td>
+                <td>{{ user.get_year_of_birth }}</td>
             </tr>
             <tr>
                 <td>واحدها</td>
-                <td>{{ assessed.get_employee.get_units_as_string }}</td>
+                <td>{{ assessed.get_units_as_string }}</td>
             </tr>
         </table>
     </div>

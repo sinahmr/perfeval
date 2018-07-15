@@ -2,7 +2,7 @@ from django import forms
 
 from assessment.models import Assessment, Scale, ScaleAnswer, QuantitativeCriterion, QualitativeCriterion, Season, \
     PunishmentReward
-from authentication.models import User
+from authentication.models import User, Employee
 
 
 class AddScaleForm(forms.ModelForm):
@@ -22,6 +22,9 @@ class AddScaleForm(forms.ModelForm):
         model = Scale
         fields = ['title', 'description', 'qual_criterion_choices', 'qual_interpretation', 'quan_criterion_formula',
                   'quan_interpretation']
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user')
+        super(AddScaleForm, self).__init__(*args, **kwargs)
 
     def clean(self):
         quan = self.cleaned_data.get('quan_criterion_formula', '')
@@ -36,18 +39,18 @@ class AddScaleForm(forms.ModelForm):
 
     def save(self, commit=True):
         scale = super(AddScaleForm, self).save(commit=False)
+        quan =None
+        qual = None
+        interpretation = None
         if commit:
             if self.cleaned_data.get('quan_criterion_formula'):
-                quan = QuantitativeCriterion.objects.create(formula=self.cleaned_data['quan_criterion_formula'],
-                                                            interpretation=self.cleaned_data[
-                                                                'quan_interpretation'])
-                scale.set_quantitative_criterion(quan)
+                quan = self.cleaned_data.get('quan_criterion_formula')
+                interpretation = self.cleaned_data['quan_interpretation']
             if self.cleaned_data.get('qual_criterion_choices'):
-                qual = QualitativeCriterion.objects.create(choices=self.cleaned_data['qual_criterion_choices'],
-                                                           interpretation=self.cleaned_data[
-                                                               'qual_interpretation'])
-                scale.set_qualitative_criterion(qual)
-
+                qual = self.cleaned_data['qual_criterion_choices']
+                interpretation = self.cleaned_data['qual_interpretation']
+            admin = self.user.get_job()
+            scale = admin.add_scale(scale, quan, qual,interpretation)
             scale.save()
         return scale
 
@@ -59,14 +62,14 @@ class ScaleAnswerForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ScaleAnswerForm, self).__init__(*args, **kwargs)
-        if self.instance.scale.get_qualitative_criterion():
-            self.choices = self.instance.scale.get_qualitative_criterion().get_choices_list()
+        if self.instance.get_scale_qualitative_criterion():
+            self.choices = self.instance.get_scale_qualitative_criterion().get_choices_list()
             choices = [(i, c) for i, c in enumerate(self.choices)]
             self.fields['qualitativeAnswer'] = forms.ChoiceField(label='پاسخ کیفی', choices=choices)
         else:
             del self.fields['qualitativeAnswer']
 
-        if self.instance.scale.get_quantitative_criterion():
+        if self.instance.get_scale_quantitative_criterion():
             pass
         else:
             del self.fields['quantitativeAnswer']
@@ -74,46 +77,41 @@ class ScaleAnswerForm(forms.ModelForm):
     def clean(self):
         quan = self.cleaned_data.get('quantitativeAnswer', '')
         qual = self.cleaned_data.get('qualitativeAnswer', '')
-        if self.instance.scale.get_qualitative_criterion() and not qual:
+        if self.instance.get_scale_qualitative_criterion() and not qual:
             raise forms.ValidationError('پاسخ کیفی را وارد کنید')
-        if self.instance.scale.get_quantitative_criterion() and not quan:
+        if self.instance.get_scale_quantitative_criterion() and not quan:
             raise forms.ValidationError('پاسخ کمی را وارد کنید')
 
     def save(self, commit=True):
         ans = super(ScaleAnswerForm, self).save(commit=False)
         index_of_choice = int(ans.get_qualitative_answer())
         ans.set_qualitative_answer(self.choices[index_of_choice])
-        ans.carried_on = True
+        ans.set_carried_on(True)
         if commit:
             ans.save()
         return ans
 
 
 class CreateAssessmentForm(forms.ModelForm):
-    a_assessor = forms.ModelChoiceField(label='ارزیاب', queryset=User.objects.all().employees())  # TODO error
+    assessor = forms.ModelChoiceField(label='ارزیاب', queryset=Employee.objects.all())  # TODO error
     scales = forms.ModelMultipleChoiceField(label='معیار ها', queryset=Scale.objects.all())
 
     class Meta:
         model = Assessment
-        fields = ['a_assessor', 'scales', ]
+        fields = ['assessor', 'scales', ]
 
     def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user')
+        self.assessed = kwargs.pop('assessed')
         super(CreateAssessmentForm, self).__init__(*args, **kwargs)
-        assessors_queryset = User.objects.exclude(id=self.user.id).employees()
-        self.fields['a_assessor'] = forms.ModelChoiceField(label='ارزیاب', queryset=assessors_queryset)  # TODO error
+        assessors_queryset = Employee.objects.exclude(self.assessed)
+        self.fields['assessor'] = forms.ModelChoiceField(label='ارزیاب', queryset=assessors_queryset)  # TODO error
 
     def save(self, commit=True):
-        assessed = self.user.get_employee()
-        assessor = self.cleaned_data['a_assessor'].get_employee()
-        assessment = Assessment.objects.create(assessor=assessor,
-                                               assessed=assessed)
+        assessed = self.assessed
+        assessor = self.cleaned_data['assessor']
+
         if commit:
-            assessment.save()
-            for sc in self.cleaned_data['scales']:
-                ScaleAnswer.objects.create(scale=sc, assessment=assessment)
-            PunishmentReward.objects.create(assessment=assessment)
-        return assessment
+            return assessor.create_assessment(assessor, assessed)
 
 
 class PunishmentRewardForm(forms.ModelForm):
