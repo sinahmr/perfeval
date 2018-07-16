@@ -1,8 +1,7 @@
 from django.contrib.auth.models import AbstractUser, UserManager as DjangoUserManager
-from django.db import IntegrityError
 from django.db import models
 from django.db.models import QuerySet
-from django.http import Http404
+from django.core.exceptions import PermissionDenied
 from polymorphic.models import PolymorphicModel
 
 from assessment.models import ScaleAnswer, Season, QuantitativeCriterion, QualitativeCriterion, Assessment, \
@@ -24,11 +23,8 @@ OBJECT_CHOICES = (
 
 
 class Permission(models.Model):
-
     action = models.CharField(choices=ACTION_CHOICES, max_length=50)
     object = models.CharField(choices=OBJECT_CHOICES, max_length=60)
-
-
 
 
 class Unit(models.Model):
@@ -39,9 +35,7 @@ class Unit(models.Model):
 
 
 class Job(PolymorphicModel):
-
     permissions = models.ManyToManyField(Permission)
-
 
     def get_id(self):
         return self.id
@@ -58,7 +52,7 @@ class Job(PolymorphicModel):
     def get_permissions(self):
         return self.permissions.all()
 
-    def show_employee_page(self,employee, context):
+    def show_employee_page(self, employee, context):
         pass
 
     def _employee_details(self, employee, context):
@@ -87,8 +81,8 @@ class Job(PolymorphicModel):
     def __str__(self):
         return self.get_user().get_name()
 
-class Admin(Job):
 
+class Admin(Job):
     def set_permissions(self):
         self.permissions.add(Permission.objects.get(action="C", object="A"))
         self.permissions.add(Permission.objects.get(action="C", object="S"))
@@ -100,10 +94,10 @@ class Admin(Job):
         self.permissions.add(Permission.objects.get(action="E", object="P"))
         self.save()
 
-    def show_employee_page(self,user, context):
+    def show_employee_page(self, user, context):
         if self.get_user() != user:
             return self._employee_details(user, context)
-        raise Http404("access denied")
+        raise PermissionDenied("access denied")
 
     def is_admin(self):
         return True
@@ -117,28 +111,27 @@ class Admin(Job):
         employee.save()
         return employee
 
-    def add_scale(self,scale,quan,qual,quan_interpretation, qual_interpretation):
-
+    def add_scale(self, scale, quan, qual, quan_interpretation, qual_interpretation):
         if qual:
-            qual = QualitativeCriterion.objects.create(choices=qual,
-                                                       interpretation=qual_interpretation)
+            qual = QualitativeCriterion.objects.create(choices=qual, interpretation=qual_interpretation)
             scale.set_qualitative_criterion(qual)
         if quan:
-            quan = QuantitativeCriterion.objects.create(formula=quan,
-                                                        interpretation=quan_interpretation)
+            quan = QuantitativeCriterion.objects.create(formula=quan, interpretation=quan_interpretation)
             scale.set_quantitative_criterion(quan)
         return scale
 
 
 class Employee(Job):
-
     units = models.ManyToManyField(Unit, verbose_name='واحدها')
 
     def get_assesseds(self):
         return self.assessments_as_assessor.filter()  # TODO should not show all, should show not considered ones
 
     def get_assessor(self):
-        return self.assessments_as_assessed.first().get_assessor()
+        assessmnet = self.assessments_as_assessed.first()
+        if assessmnet:
+            return assessmnet.get_assessor()
+        return None
 
     def get_unresolved_answers(self):
         return ScaleAnswer.objects.filter(carried_on=False, assessment__assessor__user=self.get_user())
@@ -184,7 +177,7 @@ class Employee(Job):
     def show_employee_page(self, employee, context):
         if self == employee:
             return self._employee_details(employee, context)
-        raise Http404("access denied")
+        raise PermissionDenied("access denied")
 
     def is_admin(self):
         return False
@@ -192,9 +185,8 @@ class Employee(Job):
     def is_employee(self):
         return True
 
-    def create_assessment(self,assessor,assessed,scales):
-        assessment = Assessment.objects.create(assessor=assessor,
-                                               assessed=assessed)
+    def create_assessment(self, assessor, assessed, scales):
+        assessment = Assessment.objects.create(assessor=assessor, assessed=assessed)
         for sc in scales:
             ScaleAnswer.objects.create(scale=sc, assessment=assessment)
         PunishmentReward.objects.create(assessment=assessment)
@@ -234,7 +226,7 @@ class User(AbstractUser):
     year_of_birth = models.IntegerField(verbose_name='سال تولد', null=True, blank=True)
     mobile = models.CharField(verbose_name='موبایل', max_length=15, null=True)
 
-    job = models.ForeignKey('Job',related_name="user" ,related_query_name="user",
+    job = models.ForeignKey('Job', related_name="user", related_query_name="user",
                             verbose_name='نقش', null=True, blank=True, on_delete=models.SET_NULL)
 
     objects = UserManager()
@@ -278,13 +270,8 @@ class User(AbstractUser):
     def has_permission(self, action, obj):
         permission = Permission.objects.get(action=action, object=obj)
         if permission in self.job.get_permissions():
-                return True
-        raise Http404("permission denied!")
+            return True
+        raise PermissionDenied("permission denied!")
 
-    def show_employee_page(self,employee , context):
+    def show_employee_page(self, employee, context):
         return self.get_job().show_employee_page(employee, context)
-
-
-
-
-

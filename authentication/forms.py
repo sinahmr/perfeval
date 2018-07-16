@@ -1,6 +1,6 @@
 from django import forms
 
-from authentication.models import User, Unit, Employee
+from authentication.models import User, Unit
 
 
 class AddEmployeeForm(forms.ModelForm):
@@ -37,7 +37,6 @@ class AddEmployeeForm(forms.ModelForm):
         if commit:
             user.save()
         return user
-
 
 
 class LoginForm(forms.Form):

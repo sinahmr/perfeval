@@ -13,7 +13,7 @@ class AssessedsListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     template_name = 'assessment/assessment-list.html'
 
     def test_func(self):
-        return self.request.user.has_permission("R", "A")#read #assessment
+        return self.request.user.has_permission("R", "A")  # read #assessment
 
     def get_queryset(self):
         assessor = self.request.user.get_job()
@@ -33,7 +33,7 @@ class AddScaleView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     form_class = forms.AddScaleForm
 
     def test_func(self):
-        return self.request.user.has_permission("C", "S")#create #scale
+        return self.request.user.has_permission("C", "S")  # create #scale
 
     def get_success_url(self):
         return reverse('dashboard')
@@ -50,7 +50,7 @@ class EmployeesListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     context_object_name = "employees"
 
     def test_func(self):
-        return self.request.user.has_permission("R", "E") #read #employee
+        return self.request.user.has_permission("R", "E")  # read #employee
 
 
 class ShowEmployeeView(LoginRequiredMixin, TemplateView):
@@ -59,9 +59,8 @@ class ShowEmployeeView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(ShowEmployeeView, self).get_context_data(**kwargs)
-        employee = Employee.objects.filter(id=self.kwargs.get("pk")).first()  # TODO handle None
+        employee = Employee.objects.filter(id=self.kwargs.get("pk")).first()
         return self.request.user.show_employee_page(employee, context)
-
 
 
 class CreateAssessment(LoginRequiredMixin, UserPassesTestMixin, CreateView):
@@ -69,6 +68,7 @@ class CreateAssessment(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     template_name = 'assessment/add-assessment.html'
     form_class = CreateAssessmentForm
     user = None
+    assessed = None
 
     def get_form_kwargs(self):
         kwargs = super(CreateAssessment, self).get_form_kwargs()
@@ -89,7 +89,7 @@ class DoAssessmentView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     template_name = 'assessment/assess.html'
 
     def test_func(self):
-        return self.request.user.has_permission("E", "A")  #edit #Assessment
+        return self.request.user.has_permission("E", "A")  # edit #Assessment
 
     def get_context_data(self, **kwargs):
         context = super(DoAssessmentView, self).get_context_data(**kwargs)
@@ -121,16 +121,17 @@ class AddSeasonView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     template_name = 'assessment/add-season.html'
 
     def test_func(self):
-        return self.request.user.has_permission("C", "N")  #createe #Season
+        return self.request.user.has_permission("C", "N")  # createe #Season
 
     def get_success_url(self):
         return reverse('dashboard')
 
 
-class ChangeSeasonView(LoginRequiredMixin, UserPassesTestMixin,UpdateView):
+class ChangeSeasonView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Season
     form_class = forms.ChangeSeasonForm
     template_name = 'assessment/change-season.html'
+
     def test_func(self):
         return self.request.user.has_permission("C", "N")
 
@@ -144,7 +145,4 @@ class SeasonListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     context_object_name = "seasons"
 
     def test_func(self):
-        return self.request.user.has_permission("C", "N") #read #employee
-
-
-
+        return self.request.user.has_permission("C", "N")  # read #employee

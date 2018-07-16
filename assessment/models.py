@@ -6,7 +6,7 @@ class SeasonManager(DjangoUserManager):
     def get_current_season(self):
         return self.filter(active=1).last()
 
-    def activate_season(self,season):
+    def activate_season(self, season):
         season.set_active()
         season.save()
         for season in self.exclude(id=season.get_id()):
@@ -14,10 +14,9 @@ class SeasonManager(DjangoUserManager):
             season.save()
 
 
-
 class Season(models.Model):
     title = models.CharField(verbose_name='عنوان', max_length=100, null=False, blank=False)
-    active = models.BooleanField(verbose_name='فعال',default=False)
+    active = models.BooleanField(verbose_name='فعال', default=False)
     objects = SeasonManager()
 
     def get_title(self):
@@ -34,7 +33,6 @@ class Season(models.Model):
 
     def is_active(self):
         return self.active
-
 
 
 class QualitativeCriterion(models.Model):
@@ -201,6 +199,7 @@ class ScaleAnswer(models.Model):
     def get_scale_quantitative_criterion(self):
         return self.get_scale().get_quantitative_criterion()
 
+
 class PunishmentReward(models.Model):
     TYPE_CHOICES = (
         ('R', 'تشویق'),
@@ -210,8 +209,8 @@ class PunishmentReward(models.Model):
 
     type = models.CharField(verbose_name='نوع', max_length=1, choices=TYPE_CHOICES, default='N')
     method = models.TextField(verbose_name='روش', null=True, blank=True)
-    assessment = models.OneToOneField('Assessment',related_name="punishment_reward"
-                                      ,related_query_name="punishment_reward", on_delete=models.CASCADE)
+    assessment = models.OneToOneField('Assessment', related_name="punishment_reward"
+                                      , related_query_name="punishment_reward", on_delete=models.CASCADE)
 
     def get_id(self):
         return self.id
@@ -232,5 +231,3 @@ class PunishmentReward(models.Model):
 
     def is_set(self):
         return self.get_method() and self.get_type()
-
-

@@ -5,7 +5,7 @@ from django.views.generic import TemplateView
 from django.views.generic.edit import CreateView, UpdateView
 
 from . import forms
-from .models import User, Unit , ACTION_CHOICES,OBJECT_CHOICES
+from .models import User, Unit
 
 
 class LoginView(auth_views.LoginView):
@@ -31,7 +31,7 @@ class AddEmployeeView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         return kwargs
 
     def test_func(self):
-        return self.request.user.has_permission("C", "E") #create #employee
+        return self.request.user.has_permission("C", "E")  # create #employee
 
     def get_success_url(self):
         return reverse('employee_list')
@@ -55,7 +55,7 @@ class AddUnitView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     template_name = 'authentication/add-unit.html'
 
     def test_func(self):
-        return self.request.user.has_permission("C", "U")#create #unit
+        return self.request.user.has_permission("C", "U")  # create #unit
 
     def get_success_url(self):
         return reverse('dashboard')

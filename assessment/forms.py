@@ -1,8 +1,7 @@
 from django import forms
 
-from assessment.models import Assessment, Scale, ScaleAnswer, QuantitativeCriterion, QualitativeCriterion, Season, \
-    PunishmentReward
-from authentication.models import User, Employee
+from assessment.models import Assessment, Scale, ScaleAnswer, Season, PunishmentReward
+from authentication.models import Employee
 
 
 class AddScaleForm(forms.ModelForm):
@@ -22,6 +21,7 @@ class AddScaleForm(forms.ModelForm):
         model = Scale
         fields = ['title', 'description', 'qual_criterion_choices', 'qual_interpretation', 'quan_criterion_formula',
                   'quan_interpretation']
+
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user')
         super(AddScaleForm, self).__init__(*args, **kwargs)
@@ -39,7 +39,7 @@ class AddScaleForm(forms.ModelForm):
 
     def save(self, commit=True):
         scale = super(AddScaleForm, self).save(commit=False)
-        quan =None
+        quan = None
         qual = None
         quan_interpretation = None
         qual_interpretation = None
@@ -51,7 +51,7 @@ class AddScaleForm(forms.ModelForm):
                 qual = self.cleaned_data['qual_criterion_choices']
                 qual_interpretation = self.cleaned_data['qual_interpretation']
             admin = self.user.get_job()
-            scale = admin.add_scale(scale, quan, qual,quan_interpretation,qual_interpretation)
+            scale = admin.add_scale(scale, quan, qual, quan_interpretation, qual_interpretation)
             scale.save()
         return scale
 
@@ -100,7 +100,7 @@ class CreateAssessmentForm(forms.ModelForm):
 
     class Meta:
         model = Assessment
-        fields = ['assessor', 'scales', ]
+        fields = ['assessor', 'scales']
 
     def __init__(self, *args, **kwargs):
         self.assessed = kwargs.pop('assessed')
@@ -113,7 +113,7 @@ class CreateAssessmentForm(forms.ModelForm):
         assessor = self.cleaned_data['assessor']
 
         if commit:
-            return assessor.create_assessment(assessor, assessed,self.cleaned_data['scales'])
+            return assessor.create_assessment(assessor, assessed, self.cleaned_data['scales'])
 
 
 class PunishmentRewardForm(forms.ModelForm):
@@ -125,7 +125,7 @@ class PunishmentRewardForm(forms.ModelForm):
 class AddSeasonForm(forms.ModelForm):
     class Meta:
         model = Season
-        fields = ['title','active']
+        fields = ['title', 'active']
 
 
 class ChangeSeasonForm(forms.ModelForm):
