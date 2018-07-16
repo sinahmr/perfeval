@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}لیست فصل ها{% endblock %}
+
+{% block content %}
+    <h2>لیست فصل ها</h2>
+
+    {% if not seasons %}
+        <h3 style="color: crimson">فصلی وجود ندارد</h3>
+    {% else %}
+        <table class="table table-hover" style="border: 2px solid black; ">
+          <thead class="thead-dark">
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">نام فصل</th>
+              <th scope="col">فعال بودن به عنوان فصل جاری</th>
+              <th scope="col"></th>
+            </tr>
+          </thead>
+          <tbody>
+                {% for season in seasons%}
+                    <tr>
+                      <th scope="row">{{ forloop.counter }}</th>
+                      <td>{{ season.get_title}}</td>
+                       {% if  season.is_active  %}
+                             <td>فصل جاری</td>
+                        {% else %}
+                            <td>-------</td>
+                        {% endif%}
+                      {% if  not season.is_active  %}
+                      <td> <a href="{% url 'change_season' pk=season.get_id %}" style="color: #721c24;">انتخاب فصل جاری</a></td>
+                      {% endif %}
+                    </tr>
+                {% endfor %}
+          </tbody>
+        </table>
+    {% endif %}
+
+{% endblock %}

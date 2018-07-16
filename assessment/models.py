@@ -4,12 +4,20 @@ from django.db import models
 
 class SeasonManager(DjangoUserManager):
     def get_current_season(self):
-        return self.last()
+        return self.filter(active=1).last()
+
+    def activate_season(self,season):
+        season.set_active()
+        season.save()
+        for season in self.exclude(id=season.get_id()):
+            season.set_deactive()
+            season.save()
+
 
 
 class Season(models.Model):
     title = models.CharField(verbose_name='عنوان', max_length=100, null=False, blank=False)
-
+    active = models.BooleanField(verbose_name='فعال',default=False)
     objects = SeasonManager()
 
     def get_title(self):
@@ -17,6 +25,16 @@ class Season(models.Model):
 
     def get_id(self):
         return self.id
+
+    def set_active(self):
+        self.active = 1
+
+    def set_deactive(self):
+        self.active = 0
+
+    def is_active(self):
+        return self.active
+
 
 
 class QualitativeCriterion(models.Model):

@@ -125,3 +125,26 @@ class AddSeasonView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 
     def get_success_url(self):
         return reverse('dashboard')
+
+
+class ChangeSeasonView(LoginRequiredMixin, UserPassesTestMixin,UpdateView):
+    model = Season
+    form_class = forms.ChangeSeasonForm
+    template_name = 'assessment/change-season.html'
+    def test_func(self):
+        return self.request.user.has_permission("C", "N")
+
+    def get_success_url(self):
+        return reverse('list_season')
+
+
+class SeasonListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    template_name = "assessment/season-list.html"
+    model = Season
+    context_object_name = "seasons"
+
+    def test_func(self):
+        return self.request.user.has_permission("C", "N") #read #employee
+
+
+

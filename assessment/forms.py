@@ -125,4 +125,18 @@ class PunishmentRewardForm(forms.ModelForm):
 class AddSeasonForm(forms.ModelForm):
     class Meta:
         model = Season
-        fields = ['title']
+        fields = ['title','active']
+
+
+class ChangeSeasonForm(forms.ModelForm):
+    class Meta:
+        model = Season
+        fields = ['active']
+
+    def save(self, commit=True):
+        season = super(ChangeSeasonForm, self).save(commit=False)
+        if self.cleaned_data['active']:
+            Season.objects.activate_season(season)
+        if commit:
+            season.save()
+        return season
