@@ -124,9 +124,6 @@ class Admin(Job):
 class Employee(Job):
     units = models.ManyToManyField(Unit, verbose_name='واحدها')
 
-    def get_assesseds(self):
-        return self.assessments_as_assessor.filter()  # TODO should not show all, should show not considered ones
-
     def get_assessor(self):
         assessmnet = self.assessments_as_assessed.first()
         if assessmnet:
