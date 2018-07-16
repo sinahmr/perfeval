@@ -60,7 +60,7 @@ class ShowEmployeeView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super(ShowEmployeeView, self).get_context_data(**kwargs)
         employee = Employee.objects.filter(id=self.kwargs.get("pk")).first()  # TODO handle None
-        return self.request.user.show_employee_page(self, employee, context)
+        return self.request.user.show_employee_page(employee, context)
 
 
 
@@ -73,7 +73,7 @@ class CreateAssessment(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     def get_form_kwargs(self):
         kwargs = super(CreateAssessment, self).get_form_kwargs()
         self.assessed = Employee.objects.filter(id=self.kwargs.get("pk")).first()
-        kwargs.update({'user': self.assessed})
+        kwargs.update({'assessed': self.assessed})
         return kwargs
 
     def test_func(self):

@@ -5,7 +5,8 @@ from django.db.models import QuerySet
 from django.http import Http404
 from polymorphic.models import PolymorphicModel
 
-from assessment.models import ScaleAnswer, Season, QuantitativeCriterion, QualitativeCriterion, Assessment
+from assessment.models import ScaleAnswer, Season, QuantitativeCriterion, QualitativeCriterion, Assessment, \
+    PunishmentReward
 
 ACTION_CHOICES = (
     ('C', 'create'),
@@ -63,7 +64,10 @@ class Job(PolymorphicModel):
     def _employee_details(self, employee, context):
         not_found_user = False
         user = employee.get_user()
-        assessment = employee.get_current_assessment()
+        punishment_reward = None
+        assessment = employee.get_current_assessment_assessed()
+        if assessment:
+            punishment_reward = assessment.get_punishment_reward()
         if not user:
             not_found_user = True
         context['not_found_user'] = not_found_user
@@ -71,6 +75,7 @@ class Job(PolymorphicModel):
         context['employee'] = employee
         context['is_admin'] = self.is_admin()
         context['assessment'] = assessment
+        context['punishment_reward'] = punishment_reward
         return context
 
     def is_admin(self):
@@ -78,6 +83,9 @@ class Job(PolymorphicModel):
 
     def is_employee(self):
         pass
+
+    def __str__(self):
+        return self.get_user().get_name()
 
 class Admin(Job):
 
@@ -109,15 +117,15 @@ class Admin(Job):
         employee.save()
         return employee
 
-    def add_scale(self,scale,quan,qual,interpretation):
+    def add_scale(self,scale,quan,qual,quan_interpretation, qual_interpretation):
 
         if qual:
             qual = QualitativeCriterion.objects.create(choices=qual,
-                                                       interpretation=interpretation)
+                                                       interpretation=qual_interpretation)
             scale.set_qualitative_criterion(qual)
         if quan:
             quan = QuantitativeCriterion.objects.create(formula=quan,
-                                                        interpretation=interpretation)
+                                                        interpretation=quan_interpretation)
             scale.set_quantitative_criterion(quan)
         return scale
 
@@ -145,14 +153,22 @@ class Employee(Job):
     def set_units(self, units):
         self.units.add(*units)
 
-    def get_current_assessment(self):
+    def get_current_assessment_assessed(self):
         return self.assessments_as_assessed.filter(season=Season.objects.get_current_season()).first()
 
-    def has_assessment(self):
-        assessment = self.get_current_assessment()
+    def get_current_assessment_assessor(self):
+        return self.assessments_as_assessor.filter(season=Season.objects.get_current_season()).first()
+
+    def has_assessor(self):
+        assessment = self.get_current_assessment_assessed()
         if assessment:
             return True
         return False
+
+    def get_current_assessor(self):
+        if self.has_assessor():
+            return self.get_current_assessment_assessed().get_assessor()
+        return None
 
     def assessment_done(self):
         assessment = self.assessments_as_assessed.filter(season=Season.objects.get_current_season()).first()
@@ -176,9 +192,14 @@ class Employee(Job):
     def is_employee(self):
         return True
 
-    def create_assessment(self,assessor,assessed):
-        return Assessment.objects.create(assessor=assessor,
+    def create_assessment(self,assessor,assessed,scales):
+        assessment = Assessment.objects.create(assessor=assessor,
                                                assessed=assessed)
+        for sc in scales:
+            ScaleAnswer.objects.create(scale=sc, assessment=assessment)
+        PunishmentReward.objects.create(assessment=assessment)
+        return assessment
+
 
 class UserQuerySet(QuerySet):
     def employees(self):

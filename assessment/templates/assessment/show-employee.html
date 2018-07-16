@@ -21,7 +21,7 @@
         </table>
         <br/><br/>
         <div>
-            {% if employee.has_assessment %}
+            {% if assessment %}
                 <div>
                     <div>ارزیاب: <span>{{ assessment.get_assessor.get_name }}</span></div>
                     <br/>
@@ -38,10 +38,17 @@
                              </ul>
                         {% endfor %}
 
-                        {% if is_admin %}
+                        {% if is_admin  and not punishment_reward.is_set %}
                             <div>
                                 <a href="{% url 'punishment_reward' pk=assessment.get_punishment_reward.get_id %}">تعیین روش تشویق و تنبیه</a>
                             </div>
+                        {% else %}
+                            {% if punishment_reward.is_set %}
+                                <div>
+                                    <li>نوع تشویق و تنبه:   <span>{{ assessment.get_punishment_reward.get_type}}</span></li>
+                                    <li>روش تشویق و تنبه:   <span>{{ assessment.get_punishment_reward.get_method}}</span></li>
+                                </div>
+                            {% endif %}
                         {% endif %}
                     {% else %}
                         <div>
@@ -53,7 +60,7 @@
                 </div>
                 <br/>
             {% else %}
-                <span>ارزیابی نشده است</span>
+                <span>ارزیاب ندارد</span>
                 <br>
                 <br>
                 {% if is_admin %}

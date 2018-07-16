@@ -99,7 +99,7 @@ class Assessment(models.Model):
         self.set_season()
 
     def get_punishment_reward(self):
-        return self.punishmentreward
+        return self.punishment_reward
 
     def set_season(self):
         self.season = Season.objects.get_current_season()
@@ -123,7 +123,7 @@ class Assessment(models.Model):
         return self.scale_answers.all()
 
     def is_done(self):
-        scale_answers = self.scale_answers.all()
+        scale_answers = self.get_scale_answers()
         for sc_a in scale_answers:
             if sc_a.is_carried_on() is False:
                 return False
@@ -192,18 +192,27 @@ class PunishmentReward(models.Model):
 
     type = models.CharField(verbose_name='نوع', max_length=1, choices=TYPE_CHOICES, default='N')
     method = models.TextField(verbose_name='روش', null=True, blank=True)
-    assessment = models.OneToOneField('Assessment', on_delete=models.CASCADE)
+    assessment = models.OneToOneField('Assessment',related_name="punishment_reward"
+                                      ,related_query_name="punishment_reward", on_delete=models.CASCADE)
 
     def get_id(self):
         return self.id
 
     def get_type(self):
-        return self.type
+        if self.type is None:
+            return None
+        for type_choice in self.TYPE_CHOICES:
+            if self.type == type_choice[0]:
+                return type_choice[1]
+        return None
 
     def get_method(self):
         return self.method
 
     def get_assessment(self):
         return self.assessment
+
+    def is_set(self):
+        return self.get_method() and self.get_type()
 
 

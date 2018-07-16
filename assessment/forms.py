@@ -41,16 +41,17 @@ class AddScaleForm(forms.ModelForm):
         scale = super(AddScaleForm, self).save(commit=False)
         quan =None
         qual = None
-        interpretation = None
+        quan_interpretation = None
+        qual_interpretation = None
         if commit:
             if self.cleaned_data.get('quan_criterion_formula'):
                 quan = self.cleaned_data.get('quan_criterion_formula')
-                interpretation = self.cleaned_data['quan_interpretation']
+                quan_interpretation = self.cleaned_data['quan_interpretation']
             if self.cleaned_data.get('qual_criterion_choices'):
                 qual = self.cleaned_data['qual_criterion_choices']
-                interpretation = self.cleaned_data['qual_interpretation']
+                qual_interpretation = self.cleaned_data['qual_interpretation']
             admin = self.user.get_job()
-            scale = admin.add_scale(scale, quan, qual,interpretation)
+            scale = admin.add_scale(scale, quan, qual,quan_interpretation,qual_interpretation)
             scale.save()
         return scale
 
@@ -84,8 +85,9 @@ class ScaleAnswerForm(forms.ModelForm):
 
     def save(self, commit=True):
         ans = super(ScaleAnswerForm, self).save(commit=False)
-        index_of_choice = int(ans.get_qualitative_answer())
-        ans.set_qualitative_answer(self.choices[index_of_choice])
+        if ans.get_qualitative_answer():
+            index_of_choice = int(ans.get_qualitative_answer())
+            ans.set_qualitative_answer(self.choices[index_of_choice])
         ans.set_carried_on(True)
         if commit:
             ans.save()
@@ -103,7 +105,7 @@ class CreateAssessmentForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.assessed = kwargs.pop('assessed')
         super(CreateAssessmentForm, self).__init__(*args, **kwargs)
-        assessors_queryset = Employee.objects.exclude(self.assessed)
+        assessors_queryset = Employee.objects.exclude(id=self.assessed.get_id())
         self.fields['assessor'] = forms.ModelChoiceField(label='ارزیاب', queryset=assessors_queryset)  # TODO error
 
     def save(self, commit=True):
@@ -111,7 +113,7 @@ class CreateAssessmentForm(forms.ModelForm):
         assessor = self.cleaned_data['assessor']
 
         if commit:
-            return assessor.create_assessment(assessor, assessed)
+            return assessor.create_assessment(assessor, assessed,self.cleaned_data['scales'])
 
 
 class PunishmentRewardForm(forms.ModelForm):
