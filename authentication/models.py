@@ -146,9 +146,6 @@ class Employee(Job):
     def get_current_assessment_assessed(self):
         return self.assessments_as_assessed.filter(season=Season.objects.get_current_season()).first()
 
-    def get_current_assessment_assessor(self):
-        return self.assessments_as_assessor.filter(season=Season.objects.get_current_season()).first()
-
     def has_assessor(self):
         assessment = self.get_current_assessment_assessed()
         if assessment:
