@@ -5,7 +5,7 @@
 {% block content %}
     <div>سلام {{ user.get_name }}!</div>
     <br/><br/>
-    <div>
+    <div class="w3-card-4" style="width:50%; margin-right: 25%; width: 50% ">
         {% if is_admin %}
             <a href="{% url 'add_unit' %}">افزودن واحد جدید</a>
             <br/>
