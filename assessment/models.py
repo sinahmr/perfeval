@@ -67,7 +67,7 @@ class QuantitativeCriterion(models.Model):
 
 class Scale(models.Model):
     title = models.CharField(verbose_name='عنوان', max_length=20, null=False)
-    description = models.TextField()
+    description = models.TextField(verbose_name='توضیحات')
     qualitativeCriterion = models.ForeignKey('QualitativeCriterion', on_delete=models.SET_NULL, null=True)
     quantitativeCriterion = models.ForeignKey('QuantitativeCriterion', on_delete=models.SET_NULL, null=True)
 
@@ -208,7 +208,7 @@ class PunishmentReward(models.Model):
     )
 
     type = models.CharField(verbose_name='نوع', max_length=1, choices=TYPE_CHOICES, default='N')
-    method = models.TextField(verbose_name='روش', null=True, blank=True)
+    method = models.TextField(verbose_name='روش', null=True, blank=False)
     assessment = models.OneToOneField('Assessment', related_name="punishment_reward"
                                       , related_query_name="punishment_reward", on_delete=models.CASCADE)
 

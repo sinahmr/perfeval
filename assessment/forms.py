@@ -127,6 +127,14 @@ class AddSeasonForm(forms.ModelForm):
         model = Season
         fields = ['title', 'active']
 
+    def save(self, commit=True):
+        season = super(AddSeasonForm, self).save(commit=False)
+        if self.cleaned_data['active']:
+            Season.objects.activate_season(season)
+        if commit:
+            season.save()
+        return season
+
 
 class ChangeSeasonForm(forms.ModelForm):
     class Meta:

@@ -5,14 +5,13 @@
 {% block content %}
     <div>سلام {{ user.get_name }}!</div>
     <br/><br/>
-    <div class="w3-card-4" style="width:50%; margin-right: 25%; width: 50% ">
+    <div class="w3-card-4" style="width:50%; margin-right: 25%; padding: 15px; ">
         {% if is_admin %}
             <a href="{% url 'add_unit' %}">افزودن واحد جدید</a>
             <br/>
             <a href="{% url 'add_employee' %}">افزودن کارمند جدید</a>
             <br/>
-            <a href="{% url 'add_season' %}">افزودن فصل جدید و پایان فصل جاری</a>
-            <br/>
+            <a href="{% url 'add_season' %}">افزودن فصل جدید</a>
             <br/>
             <a href="{% url 'list_season' %}"> فصل های گذشته</a>
             <br/>
@@ -27,8 +26,5 @@
             <a href="{% url 'assessment_list' %}">لیست ارزیابی‌های در دست انجام</a>
             <br/>
         {% endif %}
-        <a href="{% url 'user_update' %}">تغییر نام کاربری یا گذرواژه</a>
-        <br/>
-        <a href="{% url 'logout' %}">خروج از سیستم</a>
     </div>
 {% endblock %}

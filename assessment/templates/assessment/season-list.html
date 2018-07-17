@@ -25,11 +25,13 @@
                        {% if  season.is_active  %}
                              <td>فصل جاری</td>
                         {% else %}
-                            <td>-------</td>
+                            <td>---</td>
                         {% endif%}
-                      {% if  not season.is_active  %}
-                      <td> <a href="{% url 'change_season' pk=season.get_id %}" style="color: #721c24;">انتخاب فصل جاری</a></td>
-                      {% endif %}
+                      <td>
+                          {% if not season.is_active  %}
+                              <a href="{% url 'change_season' pk=season.get_id %}" style="color: #721c24;">انتخاب فصل جاری</a>
+                          {% endif %}
+                      </td>
                     </tr>
                 {% endfor %}
           </tbody>
