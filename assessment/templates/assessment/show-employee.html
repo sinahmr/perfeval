@@ -3,9 +3,10 @@
 {% block title %}نمایش کارمند{% endblock %}
 
 {% block content %}
+
     <h2>مشخصات کارمند</h2>
     <div>
-        <table>
+        <table id="mytable" class="table table-bordred table-striped" >
             <tr>
                 <td>کد پرسنلی</td>
                 <td> {{ user.get_personnel_code}}</td>
@@ -20,10 +21,11 @@
             </tr>
         </table>
         <br/><br/>
-        <div>
+
+
             {% if assessment %}
-                <div>
-                    <div>ارزیاب: <span>{{ assessment.get_assessor.get_name }}</span></div>
+                <div class="w3-card-4" style="width:50%; margin-right: 25%; width: 50% ">
+                    <div class="w3-container w3-blue">ارزیاب: <span>{{ assessment.get_assessor.get_name }}</span></div>
                     <br/>
                     {% if employee.assessment_done %}
                         {% for sc in assessment.get_scale_answers %}
